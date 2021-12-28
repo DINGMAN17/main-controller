@@ -1,4 +1,5 @@
 import json
+import math
 
 import numpy as np
 
@@ -14,21 +15,34 @@ class Initialisation:
 
     @staticmethod
     def read_parameters(ppvc_type):
-        with open('ppvc.json') as json_file:
+        with open('/Users/manding/work/LiftingFrame/software/mainController/control/ppvc.json') as json_file:
             ppvc_database = json.load(json_file)
         return ppvc_database[ppvc_type]
 
     @staticmethod
     def add_parameter(ppvc_dict):
         # TODO: allow add parameter from UI?
-        with open('ppvc.json', 'w') as fp:
+        with open('/Users/manding/work/LiftingFrame/software/mainController/control/ppvc.json', 'w') as fp:
             json.dump(ppvc_dict, fp)
+
+    def distance2steps(self, distance):
+        """
+        convert distance adjustments to steps adjustments for winches
+        :param distance: int
+        :return: step: str
+        """
+        sign = "1" if distance < 0 else "0"
+        step = int(360 * np.abs(distance) / (2 * math.pi * 0.07))
+        return sign + str(step).zfill(4)
 
     def run(self):
         calculated_adjustments = list(self.calculate())
-        valid_adjustments = [value if self.result_check(value) else 0 for value in calculated_adjustments]
-        message = self.encrypt_message(valid_adjustments)
-        return message
+        if self.result_check(calculated_adjustments):
+            valid_adjustments = [self.distance2steps(value) for value in calculated_adjustments]
+            msg = self.encrypt_message(valid_adjustments)
+        else:
+            raise ValueError("Initialization cannot be done due to adjustments exceeding the threshold")
+        return msg
 
     def calculate(self):
         M2_1 = np.sin(2 * np.deg2rad(self.params['lifting_angle_left']))
@@ -54,18 +68,20 @@ class Initialisation:
 
         return motor_1, motor_2, motor_3, motor_4
 
-    def result_check(self, adjustment):
+    def result_check(self, adjustments):
         # make sure the adjustment is safety
         threshold = 50
-        return np.abs(adjustment) <= threshold
+        return all(np.abs(adjustment) <= threshold for adjustment in adjustments)
 
-    def encrypt_message(self, valid_adjustments):
+    def encrypt_message(self, adjustments):
         # TODO: settle message format
-        message = ""
-        return message
+        adjustments_str = "".join(adjustments)
+        msg = "init" + str(len(adjustments_str)) + adjustments_str + "\n"
+        return msg
 
 
 if __name__ == "__main__":
-    initialisation = Initialisation("desktop_prototype", 6)
-    initialisation.run()
+    initialisation = Initialisation("1ton_prototype", 6)
+    message = initialisation.run()
+    print(message)
 

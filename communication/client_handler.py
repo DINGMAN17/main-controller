@@ -1,34 +1,53 @@
-import cv2
-import imutils
-import pickle
-import struct
+import queue
+import threading
+from command.commandinvoker import CommandInvoker
 
 
 class ClientHandler:
-    def __init__(self, client_socket, address):
-        self.address = address
-        self.client_socket = client_socket
+    def __init__(self):
+        self.level_command_queue = queue.Queue()
+        self.level_data_queue = queue.Queue()
+        self.command_invoker = CommandInvoker()
 
-    def send_message(self):
-        pass
-
-    def receive_message(self):
-        # try to receive data from the client
+    def send_message(self, client_socket, data_queue):
         while True:
-            data = self.client_socket.recv(1024).decode()
-            if data.startswith("msg"):
+            if not data_queue.empty():
+                data = data_queue.get()
                 print(data)
+                client_socket.send(data.encode())
 
-    def send_video(self):
-        webcam = cv2.VideoCapture(0)
+    def receive_message(self, client_socket, data_queue):
+        while True:
+            data = client_socket.recv(1024).decode()
+            self.process_message(data, data_queue)
 
-        while (webcam.isOpened()):
-            img, frame = webcam.read()
-            frame = imutils.resize(frame, width=320)
-            a = pickle.dumps(frame)
-            message = struct.pack("Q", len(a)) + a
-            self.client_socket.sendall(message)
+    def process_message(self, data, data_queue):
+        if data.startswith("cmd"):
+            self.command_invoker.execute(data, data_queue)
+        elif data.startswith("Debug"):
+            data_queue.put(data)
+        elif data.startswith("D"):  # data, DL1: angle; DL2: load cell
+            data_queue.put(data)
 
-            cv2.imshow('TRANSMITTING VIDEO', frame)
-            if cv2.waitKey(1) == '13':
-                self.client_socket.close()
+    def start_user(self, client_socket):
+        threading.Thread(target=self.send_message, args=(client_socket, self.level_command_queue,)).start()
+        threading.Thread(target=self.receive_message, args=(client_socket, self.level_data_queue,)).start()
+
+    def start_levelling(self, client_socket):
+        threading.Thread(target=self.send_message, args=(client_socket, self.level_data_queue,)).start()
+        threading.Thread(target=self.receive_message, args=(client_socket, self.level_command_queue,)).start()
+
+    def run(self, socket):
+        try:
+            while True:
+                data = socket.recv(1024).decode()
+                if data.startswith("ID"):
+                    if "levelling" in data:
+                        self.start_levelling(socket)
+                    if "user" in data:
+                        self.start_user(socket)
+                    break
+        except socket.error:
+            socket.close()
+
+
