@@ -76,7 +76,7 @@ class Initialisation:
     def encrypt_message(self, adjustments):
         # TODO: settle message format
         adjustments_str = "".join(adjustments)
-        msg = "init" + str(len(adjustments_str)) + adjustments_str + "\n"
+        msg = "Linit" + str(len(adjustments_str)) + adjustments_str + "\n"
         return msg
 
 

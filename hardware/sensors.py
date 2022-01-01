@@ -2,7 +2,11 @@ class Inclinometer:
 
     @staticmethod
     def check_battery():
-        return "bat\n"
+        return "Lbat\n"
+
+    @staticmethod
+    def request_data():
+        return "Lsensor\n"
 
 
 class Gyro_sensor:
@@ -35,4 +39,3 @@ class MovingMassPos:
 
 if __name__ == "__main__":
     sensor = Inclinometer()
-    print(sensor.check_condition())

@@ -12,46 +12,51 @@ class Winches:
 
     @staticmethod
     def check_condition():
-        return "check05Winch\n"
+        return "Lcheck05Winch\n"
 
     @staticmethod
     def up_auto(distance):
-        return "cmd06AW" + Winches.distance2steps(distance) + "\n"
+        return "Lcmd06AW" + Winches.distance2steps(distance) + "\n"
 
     @staticmethod
     def down_auto(distance):
-        return "cmd06AS" + Winches.distance2steps(distance) + "\n"
+        return "Lcmd06AS" + Winches.distance2steps(distance) + "\n"
 
     @staticmethod
     def stop():
-        return "cmd01t\n"
+        return "Lcmd01t\n"
 
     @staticmethod
     def down_manual():
-        return "cmd02Ms\n"
+        return "Lcmd02Ms\n"
 
     @staticmethod
     def up_manual():
-        return "cmd02Mw\n"
+        return "Lcmd02Mw\n"
 
     @staticmethod
     def level_once():
-        return "cmd01L\n"
+        return "Lcmd01L\n"
 
     @staticmethod
     def level_auto():
-        return "cmd01K\n"
+        return "Lcmd01K\n"
 
+    # only for winch testing
     @staticmethod
     def level_continue():
-        # only for winch testing
-        return "continue\n"
+        return "Lcontinue\n"
+
+    # only for winch testing
+    @staticmethod
+    def get_count():
+        return "Lcount\n"
 
     @staticmethod
     def distance2steps(distance):
         pulley_num = 6
-        steps = 360 * distance * pulley_num / (2 * math.pi * 70)
-        return str(steps)
+        steps = int(360 * distance * pulley_num / (2 * math.pi * 70))
+        return str(steps).zfill(4)
 
 
 
