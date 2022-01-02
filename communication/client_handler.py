@@ -7,18 +7,19 @@ from command.commandinvoker import CommandInvoker
 class ClientHandler:
     def __init__(self):
         self.has_admin = False
+        self.users = []
         self.controller_clients = {}
         self.command_queue = queue.Queue()
         self.level_data_queue = queue.Queue()
         self.mass_data_queue = queue.Queue()
         self.gyro_data_queue = queue.Queue()
 
-    def send_message_data(self, user_socket):
+    def send_message_data(self):
         while True:
             data_list = [data_queue.get() for data_queue in [self.level_data_queue, self.gyro_data_queue,
                                                              self.mass_data_queue] if not data_queue.empty()]
             for data in data_list:
-                user_socket.send(data.encode())
+                [user_socket.send(data.encode()) for user_socket in self.users]
                 print(data)
 
     def send_message_command(self):
@@ -47,10 +48,9 @@ class ClientHandler:
         elif data.startswith("G"):
             self.gyro_data_queue.put(data)
 
-    def start_user(self, client_socket, admin=False):
-        if admin:
-            threading.Thread(target=self.send_message_command).start()
-        threading.Thread(target=self.send_message_data, args=(client_socket,)).start()
+    def start_user(self, client_socket):
+        threading.Thread(target=self.send_message_command).start()
+        threading.Thread(target=self.send_message_data).start()
         threading.Thread(target=self.receive_message, args=(client_socket,)).start()
 
     def start_controller(self, client_socket):
@@ -62,11 +62,12 @@ class ClientHandler:
                 id_message = client_socket.recv(1024).decode()
                 if id_message.startswith("ID"):
                     if ("admin" in id_message) and (not self.has_admin):
-                        self.start_user(client_socket, admin=True)
+                        self.start_user(client_socket)
                         # only one admin user is allowed
                         self.has_admin = True
+                        self.users.append(client_socket)
                     elif "user" in id_message:
-                        self.start_user(client_socket, admin=False)
+                        self.users.append(client_socket)
                     elif "level" in id_message:
                         self.controller_clients["L"] = client_socket
                         self.start_controller(client_socket)
