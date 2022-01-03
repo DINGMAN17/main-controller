@@ -15,14 +15,14 @@ class Initialisation:
 
     @staticmethod
     def read_parameters(ppvc_type):
-        with open('/Users/manding/work/LiftingFrame/software/mainController/control/ppvc.json') as json_file:
+        with open('control/ppvc.json') as json_file:
             ppvc_database = json.load(json_file)
         return ppvc_database[ppvc_type]
 
     @staticmethod
     def add_parameter(ppvc_dict):
         # TODO: allow add parameter from UI?
-        with open('/Users/manding/work/LiftingFrame/software/mainController/control/ppvc.json', 'w') as fp:
+        with open('control/ppvc.json', 'w') as fp:
             json.dump(ppvc_dict, fp)
 
     def distance2steps(self, distance):

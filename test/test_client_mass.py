@@ -13,14 +13,14 @@ sock.send("IDmass".encode())
 def receive():
     while True:
         command = sock.recv(1024).decode()
-        if command.startswith("Mass"):
+        if command.startswith("M"):
             print(command)
 
 
 def send():
     count = 0
     while True:
-        data = "DM100" + str(count)
+        data = "M100" + str(count)
         sock.send(data.encode())
         print("send data:", data)
         count += 1

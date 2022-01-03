@@ -3,10 +3,6 @@ import socket
 import threading
 import time
 
-logging.basicConfig(filename='../communication/levelling_controller.log', filemode='w', format='%(asctime)s - %(message)s',
-                    level=logging.DEBUG)
-logging.debug('levelling start')
-
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 server_address = ("192.168.10.104", 8080)
@@ -17,7 +13,7 @@ sock.send("IDlevelling".encode())
 def receive():
     while True:
         data = sock.recv(1024).decode()
-        if data.startswith(("cmd", "init", "con")):
+        if data.startswith("L"):
             logging.debug(data)
         elif data.startswith("Debug"):
             print(data)
@@ -27,7 +23,7 @@ def receive():
 def send():
     count = 0
     while True:
-        data = "DL100" + str(count)
+        data = "L100" + str(count)
         sock.send(data.encode())
         print("send data:", data)
         count += 1

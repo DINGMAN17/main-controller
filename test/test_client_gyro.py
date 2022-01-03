@@ -13,7 +13,7 @@ sock.send("IDgyro".encode())
 def receive():
     while True:
         command = sock.recv(1024).decode()
-        if command.startswith("Gyro"):
+        if command.startswith("G"):
             print(command)
 
 

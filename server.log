@@ -1,0 +1,69 @@
+2022-01-03 14:30:51,066 - INFO: SERVER Listening at (172.23.8.117, 8080)
+2022-01-03 14:31:24,411 - INFO: new client connected at (172.23.8.117, 49737)
+2022-01-03 14:31:29,854 - INFO: admin is added
+2022-01-03 14:31:39,892 - INFO: new client connected at (172.23.9.104, 59503)
+2022-01-03 14:31:39,921 - INFO: levelling controller is added
+2022-01-03 14:31:48,804 - INFO: command sent to subcontroller: Lsensor
+
+2022-01-03 14:31:48,823 - INFO: data sent to user: L1000
+2022-01-03 14:31:56,599 - ERROR: invalid command
+Traceback (most recent call last):
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 46, in process_message
+    CommandInvoker.invoke(data, self.command_queue)
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/commandinvoker.py", line 8, in invoke
+    LevellingCommandExecutor.execute(message, command_queue)
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/command_executor.py", line 46, in execute
+    raise ValueError("Invalid input" + message)
+ValueError: Invalid inputCMDLsen
+2022-01-03 14:32:06,844 - ERROR: invalid command
+Traceback (most recent call last):
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 46, in process_message
+    CommandInvoker.invoke(data, self.command_queue)
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/commandinvoker.py", line 8, in invoke
+    LevellingCommandExecutor.execute(message, command_queue)
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/command_executor.py", line 46, in execute
+    raise ValueError("Invalid input" + message)
+ValueError: Invalid inputCMDLwjioje
+2022-01-03 14:32:19,952 - INFO: command sent to subcontroller: Lcmd01t
+
+2022-01-03 14:32:27,806 - INFO: new client connected at (172.23.9.104, 59504)
+2022-01-03 14:32:27,820 - INFO: gyro is added
+2022-01-03 14:32:32,927 - INFO: data sent to user: G1001
+2022-01-03 14:32:35,980 - ERROR: invalid command
+Traceback (most recent call last):
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 46, in process_message
+    CommandInvoker.invoke(data, self.command_queue)
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/commandinvoker.py", line 12, in invoke
+    GyroCommandExecutor.execute(message, command_queue)
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/command_executor.py", line 168, in execute
+    raise ValueError("Invalid input" + message)
+ValueError: Invalid inputCMDGjioj
+2022-01-03 14:32:37,865 - INFO: data sent to user: G1002
+2022-01-03 14:32:40,223 - INFO: command sent to subcontroller: Gyro_Stop
+
+2022-01-03 14:32:42,875 - INFO: data sent to user: G1003
+2022-01-03 14:32:44,579 - INFO: command sent to subcontroller: Gyro_getYaw
+
+2022-01-03 14:32:47,891 - INFO: data sent to user: G1004
+2022-01-03 14:32:49,951 - INFO: command sent to subcontroller: Lsensor
+
+2022-01-03 14:32:49,980 - INFO: data sent to user: L1001
+2022-01-03 14:32:52,910 - INFO: data sent to user: G1005
+2022-01-03 14:32:53,954 - INFO: command sent to subcontroller: Lsensor
+
+2022-01-03 14:32:53,978 - INFO: data sent to user: L1002
+2022-01-03 14:32:57,911 - INFO: data sent to user: G1006
+2022-01-03 14:33:01,574 - INFO: command sent to subcontroller: Linit2000314000931009310314
+
+2022-01-03 14:33:02,980 - INFO: data sent to user: G1007
+2022-01-03 14:33:07,984 - INFO: data sent to user: G1008
+2022-01-03 14:33:11,932 - INFO: command sent to subcontroller: Lcmd01L
+
+2022-01-03 14:33:12,894 - INFO: data sent to user: G1009
+2022-01-03 14:33:15,758 - INFO: command sent to subcontroller: Lcmd01K
+
+2022-01-03 14:33:18,014 - INFO: data sent to user: G10010
+2022-01-03 14:33:22,144 - INFO: command sent to subcontroller: Gyro_Init
+
+2022-01-03 14:33:23,026 - INFO: data sent to user: G10011
+2022-01-03 14:33:27,949 - INFO: data sent to user: G10012
