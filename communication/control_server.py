@@ -19,7 +19,7 @@ class ControlServer:
         host_name = socket.gethostname()
         host_ip = socket.gethostbyname(host_name)
         port = 8080
-        socket_address = ("172.23.8.117", port)
+        socket_address = ("172.23.11.245", port)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(socket_address)
         self.socket.listen(5)

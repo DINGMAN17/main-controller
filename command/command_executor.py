@@ -13,7 +13,7 @@ class LevellingCommandExecutor(BaseCommandExecutor):
     @staticmethod
     def execute(message, command_queue):
         output = None
-        if "initialisation" in message:
+        if "init" in message:
             output = LevellingCommandExecutor.initialisation()
         elif "levelonce" in message:
             output = LevellingCommandExecutor.level_once()
