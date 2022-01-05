@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class ClientType(Enum):
@@ -18,7 +18,3 @@ class Client:
     def check_connection(self):
         pass
 
-
-if __name__ == "__main__":
-    str = "hello"
-    print(str.upper())
