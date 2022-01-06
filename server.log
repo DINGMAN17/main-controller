@@ -1,21 +1,119 @@
-2022-01-06 14:23:28,301 - INFO: SERVER Listening at (192.168.8.154, 8080)
-2022-01-06 14:23:45,861 - INFO: new client connected at (192.168.8.154, 49369)
-2022-01-06 14:23:50,980 - INFO: admin is added
-2022-01-06 14:24:34,042 - INFO: new client connected at (192.168.8.105, 53263)
-2022-01-06 14:24:34,118 - INFO: gyro is added
-2022-01-06 14:25:04,145 - INFO: data sent to user: G1001
-2022-01-06 14:25:12,767 - INFO: command sent to subcontroller: Gyro_Center
+2022-01-06 18:32:13,741 - INFO: SERVER Listening at (192.168.8.154, 8080)
+2022-01-06 18:32:33,863 - INFO: new client connected at (192.168.8.154, 49722)
+2022-01-06 18:32:39,060 - INFO: new client connected at (192.168.8.105, 54440)
+2022-01-06 18:32:39,061 - INFO: LEVEL is added
+2022-01-06 18:32:45,716 - INFO: data sent to user: L1000
+2022-01-06 18:32:45,722 - INFO: ADMIN is added
+2022-01-06 18:32:45,745 - INFO: data sent to user: L1001
+2022-01-06 18:32:45,745 - INFO: data sent to user: L1002
+2022-01-06 18:32:45,751 - INFO: data sent to user: L1003
+2022-01-06 18:32:47,118 - INFO: data sent to user: L1004
+2022-01-06 18:32:49,137 - INFO: data sent to user: L1005
+2022-01-06 18:32:51,162 - INFO: data sent to user: L1006
+2022-01-06 18:32:53,203 - INFO: data sent to user: L1007
+2022-01-06 18:32:55,218 - INFO: data sent to user: L1008
+2022-01-06 18:32:57,234 - INFO: data sent to user: L1009
+2022-01-06 18:32:59,258 - INFO: data sent to user: L10010
+2022-01-06 18:33:01,079 - INFO: new client connected at (192.168.8.105, 54443)
+2022-01-06 18:33:01,135 - INFO: GYRO is added
+2022-01-06 18:33:01,147 - INFO: data sent to user: G1000
+2022-01-06 18:33:01,309 - INFO: data sent to user: L10011
+2022-01-06 18:33:03,153 - INFO: data sent to user: G1001
+2022-01-06 18:33:03,349 - INFO: data sent to user: L10012
+2022-01-06 18:33:05,162 - INFO: data sent to user: G1002
+2022-01-06 18:33:05,381 - INFO: data sent to user: L10013
+2022-01-06 18:33:07,206 - INFO: data sent to user: G1003
+2022-01-06 18:33:07,384 - INFO: data sent to user: L10014
+2022-01-06 18:33:08,484 - INFO: command sent to sub-controller: Gyro_Stop
 
-2022-01-06 14:25:17,563 - INFO: command sent to subcontroller: Gyro_Spin
+2022-01-06 18:33:09,192 - INFO: data sent to user: G1004
+2022-01-06 18:33:09,425 - INFO: data sent to user: L10015
+2022-01-06 18:33:11,243 - INFO: data sent to user: G1005
+2022-01-06 18:33:11,461 - INFO: data sent to user: L10016
+2022-01-06 18:33:13,266 - INFO: data sent to user: G1006
+2022-01-06 18:33:13,465 - INFO: data sent to user: L10017
+2022-01-06 18:33:15,280 - INFO: data sent to user: G1007
+2022-01-06 18:33:15,490 - INFO: data sent to user: L10018
+2022-01-06 18:33:16,003 - ERROR: wrong command CG-init
+ValueError: 'init' is not a valid GyroCommandType
 
-2022-01-06 14:25:23,502 - INFO: command sent to subcontroller: Gyro_AutoOn
+During handling of the above exception, another exception occurred:
 
-2022-01-06 14:25:27,977 - INFO: command sent to subcontroller: Gyro_AutoOff
+Traceback (most recent call last):
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/commandinvoker.py", line 21, in invoke
+    command = CommandInvoker.get_gyro_command(msg_components[1])
+  File "/Users/manding/work/LiftingFrame/software/mainController/command/commandinvoker.py", line 40, in get_gyro_command
+    return GyroCommandType(command)
+  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 315, in __call__
+    return cls.__new__(cls, value)
+  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 569, in __new__
+    raise exc
+  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 553, in __new__
+    result = cls._missing_(value)
+  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 582, in _missing_
+    raise ValueError("%r is not a valid %s" % (value, cls.__name__))
+ValueError: 'init' is not a valid GyroCommandType
+2022-01-06 18:33:17,292 - INFO: data sent to user: G1008
+2022-01-06 18:33:17,493 - INFO: data sent to user: L10019
+2022-01-06 18:33:19,313 - INFO: data sent to user: G1009
+2022-01-06 18:33:19,515 - INFO: data sent to user: L10020
+2022-01-06 18:33:21,326 - INFO: data sent to user: G10010
+2022-01-06 18:33:21,558 - INFO: data sent to user: L10021
+2022-01-06 18:33:23,347 - INFO: data sent to user: G10011
+2022-01-06 18:33:23,589 - INFO: data sent to user: L10022
+2022-01-06 18:33:25,372 - INFO: data sent to user: G10012
+2022-01-06 18:33:25,577 - INFO: data sent to user: L10023
+2022-01-06 18:33:27,410 - INFO: data sent to user: G10013
+2022-01-06 18:33:27,619 - INFO: data sent to user: L10024
+2022-01-06 18:33:29,426 - INFO: data sent to user: G10014
+2022-01-06 18:33:29,617 - INFO: data sent to user: L10025
+2022-01-06 18:33:31,436 - INFO: data sent to user: G10015
+2022-01-06 18:33:31,634 - INFO: data sent to user: L10026
+2022-01-06 18:33:32,379 - INFO: command sent to sub-controller: Lcmd01t
 
-2022-01-06 14:25:33,606 - INFO: command sent to subcontroller: Gyro_Zero
+2022-01-06 18:33:33,452 - INFO: data sent to user: G10016
+2022-01-06 18:33:33,644 - INFO: data sent to user: L10027
+2022-01-06 18:33:35,478 - INFO: data sent to user: G10017
+2022-01-06 18:33:35,670 - INFO: data sent to user: L10028
+2022-01-06 18:33:37,517 - INFO: data sent to user: G10018
+2022-01-06 18:33:37,695 - INFO: data sent to user: L10029
+2022-01-06 18:33:39,539 - INFO: data sent to user: G10019
+2022-01-06 18:33:39,723 - INFO: data sent to user: L10030
+2022-01-06 18:33:41,556 - INFO: data sent to user: G10020
+2022-01-06 18:33:41,728 - INFO: data sent to user: L10031
+2022-01-06 18:33:42,651 - ERROR: GYRO is disconnected from server
+Traceback (most recent call last):
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 126, in receive_message
+    data = client.socket.recv(1024).decode()
+ConnectionResetError: [Errno 54] Connection reset by peer
+2022-01-06 18:33:43,797 - INFO: data sent to user: L10032
+2022-01-06 18:33:45,823 - INFO: data sent to user: L10033
+2022-01-06 18:33:47,846 - INFO: data sent to user: L10034
+2022-01-06 18:33:49,860 - INFO: data sent to user: L10035
+2022-01-06 18:33:50,052 - INFO: command sent to sub-controller: Lcmd01t
 
-2022-01-06 14:25:34,176 - INFO: data sent to user: G1002
-2022-01-06 14:25:39,968 - INFO: command sent to subcontroller: Gyro_Stop
-
-2022-01-06 14:25:43,851 - INFO: command sent to subcontroller: Gyro_GetYaw
-
+2022-01-06 18:33:51,923 - INFO: data sent to user: L10036
+2022-01-06 18:33:53,929 - INFO: data sent to user: L10037
+2022-01-06 18:33:55,965 - INFO: data sent to user: L10038
+2022-01-06 18:33:57,994 - INFO: data sent to user: L10039
+2022-01-06 18:34:00,041 - INFO: data sent to user: L10040
+2022-01-06 18:34:02,081 - INFO: data sent to user: L10041
+2022-01-06 18:34:04,081 - INFO: data sent to user: L10042
+2022-01-06 18:34:06,116 - INFO: data sent to user: L10043
+2022-01-06 18:34:08,134 - INFO: data sent to user: L10044
+2022-01-06 18:34:10,142 - INFO: data sent to user: L10045
+2022-01-06 18:34:12,179 - INFO: data sent to user: L10046
+2022-01-06 18:34:14,183 - INFO: data sent to user: L10047
+2022-01-06 18:34:16,210 - INFO: data sent to user: L10048
+2022-01-06 18:34:16,761 - ERROR: LEVEL is disconnected from server
+Traceback (most recent call last):
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 126, in receive_message
+    data = client.socket.recv(1024).decode()
+ConnectionResetError: [Errno 54] Connection reset by peer
+2022-01-06 18:34:21,200 - ERROR: ADMIN is disconnected from server
+Traceback (most recent call last):
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 127, in receive_message
+    self.process_message(data)
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 137, in process_message
+    msg_type = MessageType(data[0])
+IndexError: string index out of range
