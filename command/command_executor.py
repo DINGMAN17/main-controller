@@ -142,16 +142,16 @@ class GyroCommandExecutor(BaseCommandExecutor):
     @staticmethod
     def execute(command_type, command_queue):
         output = None
-        if command_type == GyroCommandType.INIT:
-            output = GyroCommandExecutor.init()
-        elif command_type == GyroCommandType.CENTER:
+        if command_type == GyroCommandType.CENTER:
             output = GyroCommandExecutor.center()
         elif command_type == GyroCommandType.SPIN:
             output = GyroCommandExecutor.spin()
         elif command_type == GyroCommandType.STOP:
             output = GyroCommandExecutor.stop()
-        elif command_type == GyroCommandType.AUTO:
-            output = GyroCommandExecutor.set_auto()
+        elif command_type == GyroCommandType.AUTO_ON:
+            output = GyroCommandExecutor.on_auto()
+        elif command_type == GyroCommandType.AUTO_OFF:
+            output = GyroCommandExecutor.off_auto()
         elif command_type == GyroCommandType.ZERO:
             output = GyroCommandExecutor.set_zero()
         elif command_type == GyroCommandType.GET:
@@ -160,10 +160,6 @@ class GyroCommandExecutor(BaseCommandExecutor):
         if output is not None:
             command_queue.put(output)
         return output
-
-    @staticmethod
-    def init():
-        return Gyroscope.init()
 
     @staticmethod
     def stop():
@@ -178,8 +174,12 @@ class GyroCommandExecutor(BaseCommandExecutor):
         return Gyroscope.center()
 
     @staticmethod
-    def set_auto():
-        return Gyroscope.set_auto()
+    def on_auto():
+        return Gyroscope.on_auto()
+
+    @staticmethod
+    def off_auto():
+        return Gyroscope.off_auto()
 
     @staticmethod
     def get_data():

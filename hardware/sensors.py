@@ -17,7 +17,7 @@ class Gyro_sensor:
 
     @staticmethod
     def get_data():
-        return "Gyro_getYaw\n"
+        return "Gyro_GetYaw\n"
 
     @staticmethod
     def set_zero():

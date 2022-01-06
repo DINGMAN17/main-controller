@@ -37,8 +37,8 @@ class MassCommandType(Enum):
 class GyroCommandType(Enum):
     CENTER = "center"
     SPIN = "spin"
-    AUTO = "auto"
+    AUTO_ON = "auto_on"
+    AUTO_OFF = "auto_off"
     ZERO = "zero"
     STOP = "stop"
-    INIT = "init"
     GET = "get"
