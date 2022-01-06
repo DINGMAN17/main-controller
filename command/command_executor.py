@@ -1,3 +1,4 @@
+from communication.message import *
 from control.initialisation import Initialisation
 from hardware.gyroscope import Gyroscope
 from hardware.moving_mass import MovingMass
@@ -11,52 +12,50 @@ class BaseCommandExecutor:
 
 class LevellingCommandExecutor(BaseCommandExecutor):
     @staticmethod
-    def execute(message, command_queue):
+    def execute(command_type, command, command_queue):
         output = None
-        if "initialisation" in message:
+        if command_type == LevelCommandType.INIT:
             output = LevellingCommandExecutor.initialisation()
-        elif "levelonce" in message:
+        elif command_type == LevelCommandType.LEVEL_ONCE:
             output = LevellingCommandExecutor.level_once()
-        elif "levelauto" in message:
+        elif command_type == LevelCommandType.LEVEL_AUTO:
             output = LevellingCommandExecutor.level_auto()
-        elif "continue" in message:
+        elif command_type == LevelCommandType.CONTINUE:
             output = LevellingCommandExecutor.level_continue()
-        elif "stop" in message:
+        elif command_type == LevelCommandType.STOP:
             output = LevellingCommandExecutor.stop()
-        elif "upauto" in message:
-            # sample input: CMDLupauto,10
-            output = LevellingCommandExecutor.up_auto(message)
-        elif "downauto" in message:
-            output = LevellingCommandExecutor.down_auto(message)
-        elif "downmanual" in message:
+        elif command_type == LevelCommandType.UP_AUTO:
+            output = LevellingCommandExecutor.up_auto(command)
+        elif command_type == LevelCommandType.DOWN_AUTO:
+            output = LevellingCommandExecutor.down_auto(command)
+        elif command_type == LevelCommandType.DOWN_MANUAL:
             output = LevellingCommandExecutor.down_manual()
-        elif "upmanual" in message:
+        elif command_type == LevelCommandType.UP_MANUAL:
             output = LevellingCommandExecutor.up_manual()
-        elif "battery" in message:
+        elif command_type == LevelCommandType.BATTERY:
             output = LevellingCommandExecutor.check_battery()
-        elif "sensor" in message:
+        elif command_type == LevelCommandType.GET:
             output = LevellingCommandExecutor.request_data()
-        elif "count" in message:
+        elif command_type == LevelCommandType.COUNT:
             output = LevellingCommandExecutor.request_count()
 
         if output is not None:
             command_queue.put(output)
-            return output
-        else:
-            raise ValueError("Invalid input" + message)
+        return output
 
     @staticmethod
     def stop():
         return Winches.stop()
 
     @staticmethod
-    def up_auto(message):
-        distance = int(message.split(",")[-1])
+    def up_auto(command):
+        # sample input: CL-up_a-10
+        distance = int(command[-1])
         return Winches.up_auto(distance)
 
     @staticmethod
-    def down_auto(message):
-        distance = int(message.split(",")[-1])
+    def down_auto(command):
+        distance = int(command[-1])
         return Winches.down_auto(distance)
 
     @staticmethod
@@ -99,34 +98,32 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
 class MassCommandExecutor(BaseCommandExecutor):
     @staticmethod
-    def execute(message, command_queue):
+    def execute(command_type, command, command_queue):
         output = None
-        if "init" in message:
+        if command_type == MassCommandType.INIT:
             output = MassCommandExecutor.init()
-        elif "set" in message:
-            # CMDMset,X100,Y200
-            output = MassCommandExecutor.set_movement(message)
-        elif "move" in message:
+        elif command_type == MassCommandType.SET:
+            output = MassCommandExecutor.set_position(command)
+        elif command_type == MassCommandType.MOVE:
             output = MassCommandExecutor.move()
-        elif "stop" in message:
+        elif command_type == MassCommandType.STOP:
             output = MassCommandExecutor.stop()
-        elif "get" in message:
+        elif command_type == MassCommandType.GET:
             output = MassCommandExecutor.get_position()
 
         if output is not None:
             command_queue.put(output)
-            return output
-        else:
-            raise ValueError("Invalid input" + message)
+        return output
 
     @staticmethod
     def init():
         return MovingMass.init()
 
     @staticmethod
-    def set_movement(message):
-        pos = message.split(",")[1:]
-        return MovingMass.set_movement(pos[0], pos[1])
+    def set_position(command):
+        # sample command: CM-set-X100,Y200
+        position = command[-1].split(",")
+        return MovingMass.set_movement(position[0], position[1])
 
     @staticmethod
     def move():
@@ -143,33 +140,26 @@ class MassCommandExecutor(BaseCommandExecutor):
 
 class GyroCommandExecutor(BaseCommandExecutor):
     @staticmethod
-    def execute(message, command_queue):
+    def execute(command_type, command_queue):
         output = None
-        if "init" in message:
-            output = GyroCommandExecutor.init()
-        elif "center" in message:
-            # CMDMset,X100,Y200
+        if command_type == GyroCommandType.CENTER:
             output = GyroCommandExecutor.center()
-        elif "spin" in message:
+        elif command_type == GyroCommandType.SPIN:
             output = GyroCommandExecutor.spin()
-        elif "stop" in message:
+        elif command_type == GyroCommandType.STOP:
             output = GyroCommandExecutor.stop()
-        elif "auto" in message:
-            output = GyroCommandExecutor.set_auto()
-        elif "zero" in message:
+        elif command_type == GyroCommandType.AUTO_ON:
+            output = GyroCommandExecutor.on_auto()
+        elif command_type == GyroCommandType.AUTO_OFF:
+            output = GyroCommandExecutor.off_auto()
+        elif command_type == GyroCommandType.ZERO:
             output = GyroCommandExecutor.set_zero()
-        elif "get" in message:
+        elif command_type == GyroCommandType.GET:
             output = GyroCommandExecutor.get_data()
 
         if output is not None:
             command_queue.put(output)
-            return output
-        else:
-            raise ValueError("Invalid input" + message)
-
-    @staticmethod
-    def init():
-        return Gyroscope.init()
+        return output
 
     @staticmethod
     def stop():
@@ -184,8 +174,12 @@ class GyroCommandExecutor(BaseCommandExecutor):
         return Gyroscope.center()
 
     @staticmethod
-    def set_auto():
-        return Gyroscope.set_auto()
+    def on_auto():
+        return Gyroscope.on_auto()
+
+    @staticmethod
+    def off_auto():
+        return Gyroscope.off_auto()
 
     @staticmethod
     def get_data():
@@ -197,4 +191,5 @@ class GyroCommandExecutor(BaseCommandExecutor):
 
 
 if __name__ == "__main__":
-    MassCommandExecutor.set_movement("CMDMset,X100,Y200")
+    msg = LevellingCommandExecutor.up_auto("CL-up_a-10")
+    print(msg)

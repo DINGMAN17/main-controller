@@ -8,7 +8,7 @@ from communication.client_handler import ClientHandler
 
 class ControlServer:
     def __init__(self, timeout=60):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = None
         self.timeout = timeout
 
     def run(self):
@@ -16,16 +16,16 @@ class ControlServer:
         self.listen()
 
     def connect(self):
-        host_name = socket.gethostname()
-        host_ip = socket.gethostbyname(host_name)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        host_ip = socket.gethostbyname(socket.gethostname())
         port = 8080
-        socket_address = ("172.23.8.117", port)
+        socket_address = (host_ip, port)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(socket_address)
         self.socket.listen(5)
 
-        logging.info('SERVER Listening at (%s, %s)', "172.23.8.117", port)
-        print('SERVER Listening at (%s, %s)', "172.23.8.117", port)
+        logging.info('SERVER Listening at (%s, %s)', host_ip, port)
+        print('SERVER Listening at (%s, %s)', host_ip, port)
 
     def listen(self):
         client_handler = ClientHandler()

@@ -13,8 +13,12 @@ class Gyroscope:
         return "Gyro_Stop\n"
 
     @staticmethod
-    def set_auto():
-        return "Gyro_Auto\n"
+    def on_auto():
+        return "Gyro_AutoOn\n"
+
+    @staticmethod
+    def off_auto():
+        return "Gyro_AutoOff\n"
 
     @staticmethod
     def center():
