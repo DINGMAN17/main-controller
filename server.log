@@ -1,119 +1,213 @@
-2022-01-06 18:32:13,741 - INFO: SERVER Listening at (192.168.8.154, 8080)
-2022-01-06 18:32:33,863 - INFO: new client connected at (192.168.8.154, 49722)
-2022-01-06 18:32:39,060 - INFO: new client connected at (192.168.8.105, 54440)
-2022-01-06 18:32:39,061 - INFO: LEVEL is added
-2022-01-06 18:32:45,716 - INFO: data sent to user: L1000
-2022-01-06 18:32:45,722 - INFO: ADMIN is added
-2022-01-06 18:32:45,745 - INFO: data sent to user: L1001
-2022-01-06 18:32:45,745 - INFO: data sent to user: L1002
-2022-01-06 18:32:45,751 - INFO: data sent to user: L1003
-2022-01-06 18:32:47,118 - INFO: data sent to user: L1004
-2022-01-06 18:32:49,137 - INFO: data sent to user: L1005
-2022-01-06 18:32:51,162 - INFO: data sent to user: L1006
-2022-01-06 18:32:53,203 - INFO: data sent to user: L1007
-2022-01-06 18:32:55,218 - INFO: data sent to user: L1008
-2022-01-06 18:32:57,234 - INFO: data sent to user: L1009
-2022-01-06 18:32:59,258 - INFO: data sent to user: L10010
-2022-01-06 18:33:01,079 - INFO: new client connected at (192.168.8.105, 54443)
-2022-01-06 18:33:01,135 - INFO: GYRO is added
-2022-01-06 18:33:01,147 - INFO: data sent to user: G1000
-2022-01-06 18:33:01,309 - INFO: data sent to user: L10011
-2022-01-06 18:33:03,153 - INFO: data sent to user: G1001
-2022-01-06 18:33:03,349 - INFO: data sent to user: L10012
-2022-01-06 18:33:05,162 - INFO: data sent to user: G1002
-2022-01-06 18:33:05,381 - INFO: data sent to user: L10013
-2022-01-06 18:33:07,206 - INFO: data sent to user: G1003
-2022-01-06 18:33:07,384 - INFO: data sent to user: L10014
-2022-01-06 18:33:08,484 - INFO: command sent to sub-controller: Gyro_Stop
+2022-01-10 17:36:39,729 - INFO: SERVER Listening at (192.168.8.154, 8080)
+2022-01-10 17:37:00,616 - INFO: new client connected at (192.168.8.154, 51567)
+2022-01-10 17:37:05,168 - INFO: ADMIN is added
+2022-01-10 17:37:16,967 - INFO: new client connected at (192.168.8.105, 52361)
+2022-01-10 17:37:17,036 - INFO: LEVEL is added
+2022-01-10 17:37:17,043 - INFO: data-LD1,0.94,0.44
+LD2,989,714,290,858
 
-2022-01-06 18:33:09,192 - INFO: data sent to user: G1004
-2022-01-06 18:33:09,425 - INFO: data sent to user: L10015
-2022-01-06 18:33:11,243 - INFO: data sent to user: G1005
-2022-01-06 18:33:11,461 - INFO: data sent to user: L10016
-2022-01-06 18:33:13,266 - INFO: data sent to user: G1006
-2022-01-06 18:33:13,465 - INFO: data sent to user: L10017
-2022-01-06 18:33:15,280 - INFO: data sent to user: G1007
-2022-01-06 18:33:15,490 - INFO: data sent to user: L10018
-2022-01-06 18:33:16,003 - ERROR: wrong command CG-init
-ValueError: 'init' is not a valid GyroCommandType
+2022-01-10 17:37:19,092 - INFO: data-LD1,0.94,0.08
+LD2,312,487,722,605
 
-During handling of the above exception, another exception occurred:
+2022-01-10 17:37:21,098 - INFO: data-LD1,0.29,0.64
+LD2,909,988,128,559
 
+2022-01-10 17:37:23,099 - INFO: data-LD1,0.38,0.59
+LD2,557,628,604,799
+
+2022-01-10 17:37:25,132 - INFO: data-LD1,0.77,0.08
+LD2,218,288,587,903
+
+2022-01-10 17:37:27,143 - INFO: data-LD1,0.09,0.05
+
+2022-01-10 17:37:27,168 - INFO: data-LD2,763,628,27,215
+
+2022-01-10 17:37:29,191 - INFO: data-LD1,0.30,0.64
+LD2,799,653,148,611
+
+2022-01-10 17:37:31,190 - INFO: data-LD1,0.49,0.67
+LD2,655,739,332,224
+
+2022-01-10 17:37:33,230 - INFO: data-LD1,0.57,0.71
+LD2,599,337,898,451
+
+2022-01-10 17:37:35,260 - INFO: data-LD1,0.85,0.11
+LD2,756,640,110,114
+
+2022-01-10 17:37:37,280 - INFO: data-LD1,0.48,0.10
+LD2,421,535,300,658
+
+2022-01-10 17:37:39,299 - INFO: data-LD1,0.36,0.96
+LD2,286,412,435,178
+
+2022-01-10 17:37:41,313 - INFO: data-LD1,0.86,0.72
+LD2,756,831,926,30
+
+2022-01-10 17:37:43,347 - INFO: data-LD1,0.66,0.37
+LD2,769,461,429,618
+
+2022-01-10 17:37:45,354 - INFO: data-LD1,0.44,0.05
+LD2,630,204,161,523
+
+2022-01-10 17:37:47,379 - INFO: data-LD1,0.26,0.72
+LD2,664,966,704,2
+
+2022-01-10 17:37:49,410 - INFO: data-LD1,0.72,0.46
+LD2,292,356,919,955
+
+2022-01-10 17:37:51,446 - INFO: data-LD1,0.71,0.74
+LD2,72,442,644,91
+
+2022-01-10 17:37:53,460 - INFO: data-LD1,0.73,0.49
+
+2022-01-10 17:37:53,477 - INFO: data-LD2,594,98,895,657
+
+2022-01-10 17:37:55,495 - INFO: data-LD1,0.02,0.36
+LD2,222,834,953,736
+
+2022-01-10 17:37:57,514 - INFO: data-LD1,0.60,0.61
+LD2,202,126,243,500
+
+2022-01-10 17:37:59,514 - INFO: data-LD1,0.86,0.91
+LD2,95,744,181,978
+
+2022-01-10 17:38:01,551 - INFO: data-LD1,0.19,0.08
+LD2,336,868,510,54
+
+2022-01-10 17:38:03,571 - INFO: data-LD1,0.78,0.26
+LD2,261,517,543,424
+
+2022-01-10 17:38:05,584 - INFO: data-LD1,0.58,0.49
+LD2,722,731,242,220
+
+2022-01-10 17:38:07,642 - INFO: data-LD1,0.01,0.34
+LD2,247,244,102,843
+
+2022-01-10 17:38:09,634 - INFO: data-LD1,0.55,0.01
+
+2022-01-10 17:38:09,653 - INFO: data-LD2,523,889,554,219
+
+2022-01-10 17:38:11,652 - INFO: data-LD1,0.46,0.41
+LD2,611,837,2,563
+
+2022-01-10 17:38:13,697 - INFO: data-LD1,0.34,0.60
+LD2,943,640,351,725
+
+2022-01-10 17:38:15,729 - INFO: data-LD1,0.56,0.48
+LD2,507,614,471,410
+
+2022-01-10 17:38:17,705 - INFO: data-LD1,0.79,0.27
+
+2022-01-10 17:38:17,705 - INFO: data-LD2,804,82,618,658
+
+2022-01-10 17:38:19,733 - INFO: data-LD1,0.62,0.79
+LD2,81,317,142,768
+
+2022-01-10 17:38:21,754 - INFO: data-LD1,0.24,0.91
+LD2,314,625,76,444
+
+2022-01-10 17:38:23,775 - INFO: data-LD1,0.81,0.89
+LD2,547,291,276,149
+
+2022-01-10 17:38:25,769 - INFO: data-LD1,0.32,0.73
+LD2,114,492,979,282
+
+2022-01-10 17:38:27,835 - INFO: data-LD1,0.13,0.08
+LD2,492,492,504,43
+
+2022-01-10 17:38:27,924 - INFO: command sent to sub-controller: Lcmd01t
+
+2022-01-10 17:38:29,818 - INFO: data-LD1,0.17,0.57
+LD2,452,661,271,864
+
+2022-01-10 17:38:31,838 - INFO: data-LD1,0.53,0.12
+LD2,13,895,733,643
+
+2022-01-10 17:38:33,863 - INFO: data-LD1,0.40,0.94
+
+2022-01-10 17:38:33,864 - INFO: data-LD2,606,319,856,4
+
+2022-01-10 17:38:35,903 - INFO: data-LD1,0.55,0.69
+
+2022-01-10 17:38:35,910 - INFO: data-LD2,93,370,164,765
+
+2022-01-10 17:38:37,904 - INFO: data-LD1,0.24,0.43
+LD2,59,516,218,45
+
+2022-01-10 17:38:39,921 - INFO: data-LD1,0.95,0.71
+LD2,649,594,91,183
+
+2022-01-10 17:38:41,960 - INFO: data-LD1,0.78,0.43
+
+2022-01-10 17:38:41,966 - INFO: data-LD2,503,403,224,179
+
+2022-01-10 17:38:43,987 - INFO: data-LD1,0.60,0.27
+LD2,589,428,409,744
+
+2022-01-10 17:38:46,018 - INFO: data-LD1,0.25,0.44
+LD2,795,384,877,640
+
+2022-01-10 17:38:48,030 - INFO: data-LD1,0.58,0.40
+
+2022-01-10 17:38:48,056 - INFO: data-LD2,613,626,592,476
+
+2022-01-10 17:38:50,054 - INFO: data-LD1,0.94,0.97
+LD2,767,652,889,758
+
+2022-01-10 17:38:52,088 - INFO: data-LD1,1.00,0.23
+LD2,396,3,756,809
+
+2022-01-10 17:38:54,130 - INFO: data-LD1,0.67,0.58
+LD2,643,889,998,715
+
+2022-01-10 17:38:55,009 - INFO: command sent to sub-controller: Lcmd01L
+
+2022-01-10 17:38:56,121 - INFO: data-LD1,0.09,0.99
+
+2022-01-10 17:38:56,134 - INFO: data-LD2,502,363,561,63
+
+2022-01-10 17:38:58,193 - INFO: data-LD1,0.27,0.27
+
+2022-01-10 17:38:58,193 - INFO: data-LD2,888,784,222,721
+
+2022-01-10 17:39:00,205 - INFO: data-LD1,0.09,0.64
+LD2,247,577,778,56
+
+2022-01-10 17:39:02,251 - INFO: data-LD1,0.01,0.75
+LD2,622,507,351,202
+
+2022-01-10 17:39:04,285 - INFO: data-LD1,0.21,0.95
+LD2,633,747,33,275
+
+2022-01-10 17:39:04,540 - INFO: command sent to sub-controller: Lcontinue
+
+2022-01-10 17:39:06,291 - INFO: data-LD1,0.80,0.48
+LD2,230,692,982,957
+
+2022-01-10 17:39:08,298 - INFO: data-LD1,0.15,0.92
+LD2,679,709,976,273
+
+2022-01-10 17:39:10,303 - INFO: data-LD1,0.94,0.88
+LD2,643,337,464,990
+
+2022-01-10 17:39:10,437 - INFO: command sent to sub-controller: Lcmd01t
+
+2022-01-10 17:39:12,323 - INFO: data-LD1,0.32,0.96
+LD2,21,806,209,368
+
+2022-01-10 17:39:13,472 - INFO: command sent to sub-controller: Linit2000314000931009310314
+
+2022-01-10 17:39:14,345 - INFO: data-LD1,0.65,0.41
+LD2,319,560,398,275
+
+2022-01-10 17:39:16,389 - INFO: data-LD1,0.93,0.23
+
+2022-01-10 17:39:16,395 - INFO: data-LD2,658,992,613,95
+
+2022-01-10 17:39:17,916 - ERROR: ADMIN is disconnected from server
 Traceback (most recent call last):
-  File "/Users/manding/work/LiftingFrame/software/mainController/command/commandinvoker.py", line 21, in invoke
-    command = CommandInvoker.get_gyro_command(msg_components[1])
-  File "/Users/manding/work/LiftingFrame/software/mainController/command/commandinvoker.py", line 40, in get_gyro_command
-    return GyroCommandType(command)
-  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 315, in __call__
-    return cls.__new__(cls, value)
-  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 569, in __new__
-    raise exc
-  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 553, in __new__
-    result = cls._missing_(value)
-  File "/Users/manding/.conda/envs/mainController/lib/python3.7/enum.py", line 582, in _missing_
-    raise ValueError("%r is not a valid %s" % (value, cls.__name__))
-ValueError: 'init' is not a valid GyroCommandType
-2022-01-06 18:33:17,292 - INFO: data sent to user: G1008
-2022-01-06 18:33:17,493 - INFO: data sent to user: L10019
-2022-01-06 18:33:19,313 - INFO: data sent to user: G1009
-2022-01-06 18:33:19,515 - INFO: data sent to user: L10020
-2022-01-06 18:33:21,326 - INFO: data sent to user: G10010
-2022-01-06 18:33:21,558 - INFO: data sent to user: L10021
-2022-01-06 18:33:23,347 - INFO: data sent to user: G10011
-2022-01-06 18:33:23,589 - INFO: data sent to user: L10022
-2022-01-06 18:33:25,372 - INFO: data sent to user: G10012
-2022-01-06 18:33:25,577 - INFO: data sent to user: L10023
-2022-01-06 18:33:27,410 - INFO: data sent to user: G10013
-2022-01-06 18:33:27,619 - INFO: data sent to user: L10024
-2022-01-06 18:33:29,426 - INFO: data sent to user: G10014
-2022-01-06 18:33:29,617 - INFO: data sent to user: L10025
-2022-01-06 18:33:31,436 - INFO: data sent to user: G10015
-2022-01-06 18:33:31,634 - INFO: data sent to user: L10026
-2022-01-06 18:33:32,379 - INFO: command sent to sub-controller: Lcmd01t
-
-2022-01-06 18:33:33,452 - INFO: data sent to user: G10016
-2022-01-06 18:33:33,644 - INFO: data sent to user: L10027
-2022-01-06 18:33:35,478 - INFO: data sent to user: G10017
-2022-01-06 18:33:35,670 - INFO: data sent to user: L10028
-2022-01-06 18:33:37,517 - INFO: data sent to user: G10018
-2022-01-06 18:33:37,695 - INFO: data sent to user: L10029
-2022-01-06 18:33:39,539 - INFO: data sent to user: G10019
-2022-01-06 18:33:39,723 - INFO: data sent to user: L10030
-2022-01-06 18:33:41,556 - INFO: data sent to user: G10020
-2022-01-06 18:33:41,728 - INFO: data sent to user: L10031
-2022-01-06 18:33:42,651 - ERROR: GYRO is disconnected from server
-Traceback (most recent call last):
-  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 126, in receive_message
-    data = client.socket.recv(1024).decode()
-ConnectionResetError: [Errno 54] Connection reset by peer
-2022-01-06 18:33:43,797 - INFO: data sent to user: L10032
-2022-01-06 18:33:45,823 - INFO: data sent to user: L10033
-2022-01-06 18:33:47,846 - INFO: data sent to user: L10034
-2022-01-06 18:33:49,860 - INFO: data sent to user: L10035
-2022-01-06 18:33:50,052 - INFO: command sent to sub-controller: Lcmd01t
-
-2022-01-06 18:33:51,923 - INFO: data sent to user: L10036
-2022-01-06 18:33:53,929 - INFO: data sent to user: L10037
-2022-01-06 18:33:55,965 - INFO: data sent to user: L10038
-2022-01-06 18:33:57,994 - INFO: data sent to user: L10039
-2022-01-06 18:34:00,041 - INFO: data sent to user: L10040
-2022-01-06 18:34:02,081 - INFO: data sent to user: L10041
-2022-01-06 18:34:04,081 - INFO: data sent to user: L10042
-2022-01-06 18:34:06,116 - INFO: data sent to user: L10043
-2022-01-06 18:34:08,134 - INFO: data sent to user: L10044
-2022-01-06 18:34:10,142 - INFO: data sent to user: L10045
-2022-01-06 18:34:12,179 - INFO: data sent to user: L10046
-2022-01-06 18:34:14,183 - INFO: data sent to user: L10047
-2022-01-06 18:34:16,210 - INFO: data sent to user: L10048
-2022-01-06 18:34:16,761 - ERROR: LEVEL is disconnected from server
-Traceback (most recent call last):
-  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 126, in receive_message
-    data = client.socket.recv(1024).decode()
-ConnectionResetError: [Errno 54] Connection reset by peer
-2022-01-06 18:34:21,200 - ERROR: ADMIN is disconnected from server
-Traceback (most recent call last):
-  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 127, in receive_message
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 128, in receive_message
     self.process_message(data)
-  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 137, in process_message
+  File "/Users/manding/work/LiftingFrame/software/mainController/communication/client_handler.py", line 138, in process_message
     msg_type = MessageType(data[0])
 IndexError: string index out of range

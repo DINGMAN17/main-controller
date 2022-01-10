@@ -2,11 +2,11 @@ import queue
 import threading
 import time
 
+from message.command.command_executor import *
 from utils import LogMessage
-from command.command_executor import *
-from command.commandinvoker import CommandInvoker
+from message.command.command_invoker import CommandInvoker
 from communication.client import *
-from communication.message import MessageType
+from message.message import MessageType
 
 
 class ClientHandler:
@@ -14,6 +14,7 @@ class ClientHandler:
         self.admin = None
         self.users = []
         self.controller_clients = {}
+        self.alert_queue = queue.Queue()
         self.command_queue = queue.Queue()
         self.level_data_queue = queue.Queue()
         self.mass_data_queue = queue.Queue()
@@ -27,9 +28,9 @@ class ClientHandler:
                 client = Client(client_type, client_socket)
 
                 if (client.client_type == ClientType.ADMIN) and (self.admin is None):
+                    self.admin = client
                     self.start_admin(client)
                     # only one admin user is allowed
-                    self.admin = client
                     self.users.append(client)
                     LogMessage.add_client(client.client_type.name)
                 elif client.client_type == ClientType.USER:
@@ -68,7 +69,7 @@ class ClientHandler:
         threading.Thread(target=self.receive_message, args=(client,)).start()
 
     def send_message_data(self):
-        while True:
+        while self.admin.connected:
             data_list = [data_queue.get() for data_queue in [self.level_data_queue, self.gyro_data_queue,
                                                              self.mass_data_queue] if not data_queue.empty()]
             for data in data_list:
@@ -80,14 +81,14 @@ class ClientHandler:
                             self.users.remove(user)
                             LogMessage.remove_user()
                         else:
-                            user.set_disconnect()
+                            self.admin.set_disconnect()
                             self.alert()
                 LogMessage.send_data(data)
                 print(data)
 
     def send_message_command(self):
-        try:
-            while True:
+        while self.admin.connected:
+            try:
                 if not self.command_queue.empty():
                     command = self.command_queue.get()
                     print(command)
@@ -98,10 +99,10 @@ class ClientHandler:
                     else:
                         self.admin.socket.sendall("intended client is not connected".encode())
 
-        except OSError as e:
-            self.alert()
-            self.controller_clients[client_type].set_disconnect()
-            LogMessage.disconnect(client_type.name)
+            except OSError as e:
+                self.alert()
+                self.controller_clients[client_type].set_disconnect()
+                LogMessage.disconnect(client_type.name)
 
     def request_data(self, client, interval=2):
         while client.connected:
@@ -117,8 +118,8 @@ class ClientHandler:
                 time.sleep(interval)
             except OSError:
                 self.alert()
-                LogMessage.disconnect(client.client_type.name)
                 client.set_disconnect()
+                LogMessage.disconnect(client.client_type.name)
 
     def receive_message(self, client):
         while client.connected:
@@ -136,8 +137,10 @@ class ClientHandler:
     def process_message(self, data):
         msg_type = MessageType(data[0])
         if msg_type == MessageType.COMMAND:
-            CommandInvoker.invoke(data, self.command_queue)
-        elif msg_type == MessageType.LEVEL_DATA:  # data, DL1: angle; DL2: load cell
+            command_to_send = CommandInvoker.invoke(data)
+            if command_to_send is not None:
+                self.command_queue.put(command_to_send)
+        elif msg_type == MessageType.LEVEL_DATA:  # data, LD1: angle; LD2: load cell
             self.level_data_queue.put(data)
         elif msg_type == MessageType.MASS_DATA:
             self.mass_data_queue.put(data)

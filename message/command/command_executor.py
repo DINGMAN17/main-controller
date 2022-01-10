@@ -1,4 +1,4 @@
-from communication.message import *
+from message.message import *
 from control.initialisation import Initialisation
 from hardware.gyroscope import Gyroscope
 from hardware.moving_mass import MovingMass
@@ -12,7 +12,7 @@ class BaseCommandExecutor:
 
 class LevellingCommandExecutor(BaseCommandExecutor):
     @staticmethod
-    def execute(command_type, command, command_queue):
+    def execute(command_type, command):
         output = None
         if command_type == LevelCommandType.INIT:
             output = LevellingCommandExecutor.initialisation()
@@ -39,8 +39,6 @@ class LevellingCommandExecutor(BaseCommandExecutor):
         elif command_type == LevelCommandType.COUNT:
             output = LevellingCommandExecutor.request_count()
 
-        if output is not None:
-            command_queue.put(output)
         return output
 
     @staticmethod
@@ -98,7 +96,7 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
 class MassCommandExecutor(BaseCommandExecutor):
     @staticmethod
-    def execute(command_type, command, command_queue):
+    def execute(command_type, command):
         output = None
         if command_type == MassCommandType.INIT:
             output = MassCommandExecutor.init()
@@ -111,8 +109,6 @@ class MassCommandExecutor(BaseCommandExecutor):
         elif command_type == MassCommandType.GET:
             output = MassCommandExecutor.get_position()
 
-        if output is not None:
-            command_queue.put(output)
         return output
 
     @staticmethod
@@ -140,7 +136,7 @@ class MassCommandExecutor(BaseCommandExecutor):
 
 class GyroCommandExecutor(BaseCommandExecutor):
     @staticmethod
-    def execute(command_type, command_queue):
+    def execute(command_type):
         output = None
         if command_type == GyroCommandType.CENTER:
             output = GyroCommandExecutor.center()
@@ -157,8 +153,6 @@ class GyroCommandExecutor(BaseCommandExecutor):
         elif command_type == GyroCommandType.GET:
             output = GyroCommandExecutor.get_data()
 
-        if output is not None:
-            command_queue.put(output)
         return output
 
     @staticmethod

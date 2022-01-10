@@ -1,25 +1,27 @@
 import logging
 
-from command.command_executor import *
-from communication.message import *
+from message.command.command_executor import *
+from message.message import *
 
 
 class CommandInvoker:
     @staticmethod
-    def invoke(message, command_queue):
+    def invoke(message):
         # sample message: CL-init, C:command; L:levelling
         try:
+            command_to_send = None
             msg_components = message.split("-", 2)
             command_type = CommandInvoker.get_command_type(msg_components[0])
             if command_type == MessageType.LEVEL_COMMAND:
                 command = CommandInvoker.get_level_command(msg_components[1])
-                LevellingCommandExecutor.execute(command, msg_components, command_queue)
+                command_to_send = LevellingCommandExecutor.execute(command, msg_components)
             elif command_type == MessageType.MASS_COMMAND:
                 command = CommandInvoker.get_mass_command(msg_components[1])
-                MassCommandExecutor.execute(command, msg_components, command_queue)
+                command_to_send = MassCommandExecutor.execute(command, msg_components)
             elif command_type == MessageType.GYRO_COMMAND:
                 command = CommandInvoker.get_gyro_command(msg_components[1])
-                GyroCommandExecutor.execute(command, command_queue)
+                command_to_send = GyroCommandExecutor.execute(command)
+            return command_to_send
         except (ValueError, IndexError) as e:
             logging.exception("wrong command %s", message)
 

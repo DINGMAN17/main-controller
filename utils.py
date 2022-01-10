@@ -34,4 +34,4 @@ class LogMessage:
 
     @staticmethod
     def send_data(data):
-        logging.info("data sent to user: %s", data)
+        logging.info("data-%s", data)

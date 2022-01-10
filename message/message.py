@@ -1,6 +1,17 @@
 from enum import Enum
 
 
+class BaseMessageType(Enum):
+    # TODO: discuss message type for sub-controllers
+    COMMAND = "C"
+    DATA = "D"
+    INFO = "INFO"
+    STATUS = "STATUS"
+    ERROR = "ERROR"
+    EMERGENCY = "EMERG"
+    WARNING = "WARN"
+
+
 class MessageType(Enum):
     COMMAND = "C"
     LEVEL_COMMAND = "CL"
