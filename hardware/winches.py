@@ -52,6 +52,11 @@ class Winches:
     def get_count():
         return "Lcount\n"
 
+    # only for winch testing
+    @staticmethod
+    def move():
+        return "Lmove\n"
+
     @staticmethod
     def distance2steps(distance):
         pulley_num = 6

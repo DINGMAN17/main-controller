@@ -38,8 +38,14 @@ class LevellingCommandExecutor(BaseCommandExecutor):
             output = LevellingCommandExecutor.request_data()
         elif command_type == LevelCommandType.COUNT:
             output = LevellingCommandExecutor.request_count()
+        elif command_type == LevelCommandType.MOVE:  # for testing only
+            output = LevellingCommandExecutor.move()
 
         return output
+
+    @staticmethod
+    def move():
+        return Winches.move()
 
     @staticmethod
     def stop():

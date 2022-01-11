@@ -35,6 +35,7 @@ class LevelCommandType(Enum):
     STOP = "stop"
     INIT = "init"
     GET = "get"
+    MOVE = "move"  # for testing only
 
 
 class MassCommandType(Enum):

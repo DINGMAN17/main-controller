@@ -23,7 +23,7 @@ class ClientHandler:
     def run(self, client_socket):
         while True:
             try:
-                id_message = client_socket.recv(1024).decode()
+                id_message = client_socket.recv(1024).decode().strip()
                 client_type = Client.identify_client(id_message)
                 client = Client(client_type, client_socket)
 
@@ -124,7 +124,7 @@ class ClientHandler:
     def receive_message(self, client):
         while client.connected:
             try:
-                data = client.socket.recv(1024).decode()
+                data = client.socket.recv(1024).decode().strip()
                 self.process_message(data)
             except ValueError as e:
                 err = LogMessage.bad_request()

@@ -1,10 +1,6 @@
 class Gyroscope:
 
     @staticmethod
-    def init():
-        return "Gyro_Init\n"
-
-    @staticmethod
     def spin():
         return "Gyro_Spin\n"
 
