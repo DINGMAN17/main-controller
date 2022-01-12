@@ -6,7 +6,6 @@ from message.command.command_executor import *
 from utils import LogMessage
 from message.command.command_invoker import CommandInvoker
 from communication.client import *
-from message.message import MessageType
 
 
 class ClientHandler:
@@ -16,9 +15,9 @@ class ClientHandler:
         self.controller_clients = {}
         self.alert_queue = queue.Queue()
         self.command_queue = queue.Queue()
-        self.level_data_queue = queue.Queue()
-        self.mass_data_queue = queue.Queue()
-        self.gyro_data_queue = queue.Queue()
+        self.data_queue = queue.Queue()
+        self.info_queue = queue.Queue()
+        self.error_queue = queue.Queue()
 
     def run(self, client_socket):
         while True:
@@ -70,8 +69,9 @@ class ClientHandler:
 
     def send_message_data(self):
         while self.admin.connected:
-            data_list = [data_queue.get() for data_queue in [self.level_data_queue, self.gyro_data_queue,
-                                                             self.mass_data_queue] if not data_queue.empty()]
+            data_list = [data_queue.get() for data_queue in [self.info_queue, self.error_queue] if
+                         not data_queue.empty()]
+
             for data in data_list:
                 for user in self.users:
                     try:
@@ -83,7 +83,7 @@ class ClientHandler:
                         else:
                             self.admin.set_disconnect()
                             self.alert()
-                LogMessage.send_data(data)
+                LogMessage.send_to_user(data)
                 print(data)
 
     def send_message_command(self):
@@ -91,11 +91,12 @@ class ClientHandler:
             try:
                 if not self.command_queue.empty():
                     command = self.command_queue.get()
-                    print(command)
+                    print("received command from user: " + command)
                     client_type = ClientType(command[0])
                     if client_type in self.controller_clients and self.controller_clients[client_type].connected:
                         self.controller_clients[client_type].socket.sendall(command.encode())
                         LogMessage.send_command(command)
+                        print("sent command to controller: " + command)
                     else:
                         self.admin.socket.sendall("intended client is not connected".encode())
 
@@ -125,27 +126,40 @@ class ClientHandler:
         while client.connected:
             try:
                 data = client.socket.recv(1024).decode().strip()
-                self.process_message(data)
-            except ValueError as e:
-                err = LogMessage.bad_request()
-                client.socket.sendall(err)
-            except (OSError, IndexError) as e:
+                self.process_general_message(data)
+            except OSError as e:
                 self.alert()
                 client.set_disconnect()
                 LogMessage.disconnect(client.client_type.name)
+            except Exception as e:
+                err = LogMessage.bad_request()
 
-    def process_message(self, data):
-        msg_type = MessageType(data[0])
-        if msg_type == MessageType.COMMAND:
-            command_to_send = CommandInvoker.invoke(data)
+    def process_general_message(self, message):
+        message_components = message.split("-")
+        client_type = ClientType(message_components[0])
+        if client_type == ClientType.ADMIN:
+            self.process_admin_message(message)
+        elif client_type in [ClientType.LEVEL, ClientType.MASS, ClientType.GYRO]:  # data, LD1: angle; LD2: load cell
+            self.process_controller_message(message)
+
+    def process_admin_message(self, message):
+        message_components = message.split("-")
+        msg_type = BaseMessageType(message_components[1])
+        if msg_type == BaseMessageType.COMMAND:
+            command_to_send = CommandInvoker.invoke(message[2:])  # start from "C-L-stop"
             if command_to_send is not None:
                 self.command_queue.put(command_to_send)
-        elif msg_type == MessageType.LEVEL_DATA:  # data, LD1: angle; LD2: load cell
-            self.level_data_queue.put(data)
-        elif msg_type == MessageType.MASS_DATA:
-            self.mass_data_queue.put(data)
-        elif msg_type == MessageType.GYRO_DATA:
-            self.gyro_data_queue.put(data)
+
+    def process_controller_message(self, message):
+        message_components = message.split("-")
+        msg_type = BaseMessageType(message_components[1])
+        if msg_type == BaseMessageType.DATA:
+            LogMessage.receive_data(message)
+            self.data_queue.put(message)
+        elif msg_type == BaseMessageType.INFO:
+            self.info_queue.put(message)
+        elif msg_type == BaseMessageType.ERROR:
+            self.error_queue.put(message)
 
     def alert(self):
         # TODO: how to lock the system when critical condition occurs??

@@ -12,10 +12,6 @@ class Inclinometer:
 class Gyro_sensor:
 
     @staticmethod
-    def check_condition():
-        return "checkGyro\n"
-
-    @staticmethod
     def get_data():
         return "Gyro_GetYaw\n"
 

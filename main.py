@@ -1,10 +1,13 @@
 import logging
+from datetime import datetime
 
 from communication.control_server import ControlServer
 
 
 def setup():
-    logging.basicConfig(filename='server.log', filemode='w', format='%(asctime)s - %(levelname)s: %(message)s',
+    timestamp = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")
+    filename = "log/server_" + timestamp + ".log"
+    logging.basicConfig(filename=filename, filemode='w', format='%(asctime)s - %(levelname)s: %(message)s',
                         level=logging.DEBUG)
 
 

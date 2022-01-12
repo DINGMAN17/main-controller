@@ -3,7 +3,7 @@ import csv
 
 class DataPostprocess:
     def __init__(self, log_filename=None):
-        self.log_filename = log_filename if log_filename is not None else "../server.log"
+        self.log_filename = log_filename if log_filename is not None else "/Users/manding/work/LiftingFrame/software/mainController/log/server_2022_01_11-07_36_23_PM.log"
         self.angle_csv = "angle_data.csv"
         self.load_csv = "load_data.csv"
 
@@ -12,7 +12,7 @@ class DataPostprocess:
         count = 0
         with open(self.log_filename, 'r') as f:
             for line in f:
-                if "LD1" in line:
+                if "L-D-1" in line:
                     angle_record = line.strip().split("-")[-1].split(",")[1:]
                     if time:
                         angle_list[count].extend(angle_record)
@@ -29,9 +29,9 @@ class DataPostprocess:
         with open(self.log_filename, 'r') as f:
             for line in f:
                 load_record = None
-                if line.startswith("LD2"):
+                if line.startswith("L-D-2"):
                     load_record = line.strip().split(",")[1:]
-                elif "LD2" in line:
+                elif "L-D-2" in line:
                     load_record = line.strip().split("-")[-1].split(",")[1:]
                 if load_record is not None:
                     if time:
@@ -63,3 +63,4 @@ class DataPostprocess:
 if __name__ == "__main__":
     data = DataPostprocess()
     data.process_angle()
+    data.process_load()

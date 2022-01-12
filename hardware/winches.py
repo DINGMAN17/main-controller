@@ -57,6 +57,11 @@ class Winches:
     def move():
         return "Lmove\n"
 
+    # only for winch testing
+    @staticmethod
+    def cable_init():
+        return "Lcable_init\n"
+
     @staticmethod
     def distance2steps(distance):
         pulley_num = 6

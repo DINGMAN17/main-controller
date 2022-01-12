@@ -40,12 +40,12 @@ class LevellingCommandExecutor(BaseCommandExecutor):
             output = LevellingCommandExecutor.request_count()
         elif command_type == LevelCommandType.MOVE:  # for testing only
             output = LevellingCommandExecutor.move()
+        elif command_type == LevelCommandType.CABLE_INIT:
+            output = LevellingCommandExecutor.cable_init()
+        elif command_type == LevelCommandType.STEP:
+            output = LevellingCommandExecutor.step(command)
 
         return output
-
-    @staticmethod
-    def move():
-        return Winches.move()
 
     @staticmethod
     def stop():
@@ -98,6 +98,18 @@ class LevellingCommandExecutor(BaseCommandExecutor):
     def initialisation(ppvc_type="1ton_prototype", pulley_num=6):
         ppvc_init = Initialisation(ppvc_type, pulley_num)
         return ppvc_init.run()
+
+    @staticmethod
+    def move():
+        return Winches.move()
+
+    @staticmethod
+    def cable_init():
+        return Winches.cable_init()
+
+    @staticmethod
+    def step(command):
+        return "Linit" + command[-1] + "\n"
 
 
 class MassCommandExecutor(BaseCommandExecutor):

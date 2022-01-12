@@ -19,8 +19,8 @@ class LogMessage:
         logging.exception("%s is disconnected from server", client_name)
 
     @staticmethod
-    def bad_request():
-        err = "ERROR: bad request/format"
+    def bad_request(data=""):
+        err = "ERROR: bad request/format" + data
         logging.exception(err)
         return err
 
@@ -33,5 +33,9 @@ class LogMessage:
         logging.info("Connection error while sending data to user, remove user from list")
 
     @staticmethod
-    def send_data(data):
-        logging.info("data-%s", data)
+    def send_to_user(data):
+        logging.info("sent to user-%s", data)
+
+    @staticmethod
+    def receive_data(data):
+        logging.info("sensor data-%s", data)

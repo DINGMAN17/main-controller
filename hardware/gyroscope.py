@@ -1,7 +1,7 @@
 class Gyroscope:
 
     @staticmethod
-    def spin():
+    def spin():  # DELETE
         return "Gyro_Spin\n"
 
     @staticmethod
@@ -22,5 +22,4 @@ class Gyroscope:
 
     @staticmethod
     def check_condition():
-        # TODO: CHECK WITH SIM-TECH WHETHER THIS FUNCTION CAN BE IMPLEMENTED
-        return ""
+        return "Gyro_CheckSystem\n"

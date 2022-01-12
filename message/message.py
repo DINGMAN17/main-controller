@@ -12,16 +12,6 @@ class BaseMessageType(Enum):
     WARNING = "WARN"
 
 
-class MessageType(Enum):
-    COMMAND = "C"
-    LEVEL_COMMAND = "CL"
-    MASS_COMMAND = "CM"
-    GYRO_COMMAND = "CG"
-    LEVEL_DATA = "L"
-    MASS_DATA = "M"
-    GYRO_DATA = "G"
-
-
 class LevelCommandType(Enum):
     UP_AUTO = "up_a"
     DOWN_AUTO = "down_a"
@@ -36,6 +26,8 @@ class LevelCommandType(Enum):
     INIT = "init"
     GET = "get"
     MOVE = "move"  # for testing only
+    CABLE_INIT = "cable_init"  # for testing only
+    STEP = "step"  # move winch individually, follow init command format
 
 
 class MassCommandType(Enum):
@@ -54,3 +46,4 @@ class GyroCommandType(Enum):
     ZERO = "zero"
     STOP = "stop"
     GET = "get"
+
