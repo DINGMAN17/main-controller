@@ -10,9 +10,9 @@ class Winches:
         ppvc_init = Initialisation(ppvc_type, pulley_num)
         return ppvc_init.run()
 
-    @staticmethod
-    def check_condition():
-        return "Lcheck05Winch\n"
+    # @staticmethod
+    # def check_condition():
+    #     return "Lcheck05Winch\n"
 
     @staticmethod
     def up_auto(distance):

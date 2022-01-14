@@ -3,21 +3,28 @@ import threading
 import time
 
 from message.command.command_executor import *
+from message.info.info import MassInfoType
+from message.info.info_executor import MassInfoExecutor
+from message.message import BaseMessageType
 from utils import LogMessage
 from message.command.command_invoker import CommandInvoker
 from communication.client import *
 
 
+# TODO: solve admin disconnect, reconnect not recognise problem
 class ClientHandler:
     def __init__(self):
         self.admin = None
         self.users = []
         self.controller_clients = {}
-        self.alert_queue = queue.Queue()
-        self.command_queue = queue.Queue()
+        self.clients_status = {}
         self.data_queue = queue.Queue()
         self.info_queue = queue.Queue()
         self.error_queue = queue.Queue()
+        self.status_queue = queue.Queue()
+        self.command_queue = queue.Queue()
+        self.warning_queue = queue.Queue()
+        self.emergency_queue = queue.Queue()
 
     def run(self, client_socket):
         while True:
@@ -25,29 +32,9 @@ class ClientHandler:
                 id_message = client_socket.recv(1024).decode().strip()
                 client_type = Client.identify_client(id_message)
                 client = Client(client_type, client_socket)
-
-                if (client.client_type == ClientType.ADMIN) and (self.admin is None):
-                    self.admin = client
-                    self.start_admin(client)
-                    # only one admin user is allowed
-                    self.users.append(client)
+                if self.create_valid_client(client):
                     LogMessage.add_client(client.client_type.name)
-                elif client.client_type == ClientType.USER:
-                    self.users.append(client)
-                    LogMessage.add_client(client.client_type.name)
-                elif client.client_type == ClientType.LEVEL:
-                    self.controller_clients[ClientType.LEVEL] = client
-                    self.start_controller(client)
-                    LogMessage.add_client(client.client_type.name)
-                elif client.client_type == ClientType.MASS:
-                    self.controller_clients[ClientType.MASS] = client
-                    self.start_controller(client)
-                    LogMessage.add_client(client.client_type.name)
-                elif client.client_type == ClientType.GYRO:
-                    self.controller_clients[ClientType.GYRO] = client
-                    self.start_controller(client)
-                    LogMessage.add_client(client.client_type.name)
-                break
+                    break
 
             except ValueError as e:
                 err = LogMessage.wrong_client()
@@ -57,6 +44,27 @@ class ClientHandler:
                 LogMessage.disconnect()
                 client_socket.close()
                 break
+
+    def create_valid_client(self, client):
+        if client.client_type == ClientType.ADMIN:
+            if (self.admin is not None) and self.admin.connected:
+                return False
+            self.admin = client
+            self.start_admin(client)
+            # only one admin user is allowed
+            self.users.append(client)
+        elif client.client_type == ClientType.USER:
+            self.users.append(client)
+        elif client.client_type == ClientType.LEVEL:
+            self.controller_clients[ClientType.LEVEL] = client
+            self.start_controller(client)
+        elif client.client_type == ClientType.MASS:
+            self.controller_clients[ClientType.MASS] = client
+            self.start_controller(client)
+        elif client.client_type == ClientType.GYRO:
+            self.controller_clients[ClientType.GYRO] = client
+            self.start_controller(client)
+        return True
 
     def start_admin(self, client):
         threading.Thread(target=self.send_message_command).start()
@@ -105,7 +113,7 @@ class ClientHandler:
                 self.controller_clients[client_type].set_disconnect()
                 LogMessage.disconnect(client_type.name)
 
-    def request_data(self, client, interval=2):
+    def request_data(self, client, interval=10):
         while client.connected:
             try:
                 command = None
@@ -125,8 +133,11 @@ class ClientHandler:
     def receive_message(self, client):
         while client.connected:
             try:
-                data = client.socket.recv(1024).decode().strip()
-                self.process_general_message(data)
+                message = client.socket.recv(1024).decode().strip()
+                data_list = message.split("\n")
+                for data in data_list:
+                    if len(data) > 0:
+                        self.process_general_message(data, client.client_type)
             except OSError as e:
                 self.alert()
                 client.set_disconnect()
@@ -134,9 +145,7 @@ class ClientHandler:
             except Exception as e:
                 err = LogMessage.bad_request()
 
-    def process_general_message(self, message):
-        message_components = message.split("-")
-        client_type = ClientType(message_components[0])
+    def process_general_message(self, message, client_type):
         if client_type == ClientType.ADMIN:
             self.process_admin_message(message)
         elif client_type in [ClientType.LEVEL, ClientType.MASS, ClientType.GYRO]:  # data, LD1: angle; LD2: load cell
@@ -146,9 +155,13 @@ class ClientHandler:
         message_components = message.split("-")
         msg_type = BaseMessageType(message_components[1])
         if msg_type == BaseMessageType.COMMAND:
-            command_to_send = CommandInvoker.invoke(message[2:])  # start from "C-L-stop"
-            if command_to_send is not None:
-                self.command_queue.put(command_to_send)
+            self.process_command(message[2:])
+
+    def process_command(self, message):
+        command_to_send = CommandInvoker.invoke(message)  # start from "C-L-stop"
+        if command_to_send is not None:
+            commands_list = command_to_send.split("\n")
+            [self.command_queue.put(cmd + "\n") for cmd in commands_list if len(cmd) > 0]
 
     def process_controller_message(self, message):
         message_components = message.split("-")
@@ -157,9 +170,22 @@ class ClientHandler:
             LogMessage.receive_data(message)
             self.data_queue.put(message)
         elif msg_type == BaseMessageType.INFO:
-            self.info_queue.put(message)
+            print("info queue: " + message)
+            self.process_info(message)
         elif msg_type == BaseMessageType.ERROR:
             self.error_queue.put(message)
+
+    def process_info(self, message):
+        # "M-INFO-moved"
+        try:
+            msg = message.split("-")[-1]
+            info, command = MassInfoExecutor.execute(MassInfoType(msg))
+            if info is not None:
+                self.info_queue.put(info)
+            if command is not None:
+                self.command_queue.put(command)
+        except ValueError as e:
+            print(e)
 
     def alert(self):
         # TODO: how to lock the system when critical condition occurs??

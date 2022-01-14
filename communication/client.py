@@ -10,7 +10,6 @@ class ClientType(Enum):
 
 
 class Client:
-    # TODO: integrate client class to client_handler class
     def __init__(self, client_type, socket):
         self.client_type = client_type
         self.socket = socket

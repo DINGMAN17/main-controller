@@ -74,7 +74,6 @@ class Initialisation:
         return all(np.abs(adjustment) <= threshold for adjustment in adjustments)
 
     def encrypt_message(self, adjustments):
-        # TODO: settle message format
         adjustments_str = "".join(adjustments)
         msg = "Linit" + str(len(adjustments_str)) + adjustments_str + "\n"
         return msg

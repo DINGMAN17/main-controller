@@ -1,9 +1,9 @@
-from message.message import *
 from control.initialisation import Initialisation
 from hardware.gyroscope import Gyroscope
 from hardware.moving_mass import MovingMass
 from hardware.sensors import *
 from hardware.winches import Winches
+from message.command.command import *
 
 
 class BaseCommandExecutor:
@@ -109,7 +109,7 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
     @staticmethod
     def step(command):
-        return "Linit" + command[-1] + "\n"
+        return "Linit20" + command[-1] + "\n"
 
 
 class MassCommandExecutor(BaseCommandExecutor):
@@ -202,6 +202,31 @@ class GyroCommandExecutor(BaseCommandExecutor):
         return Gyro_sensor.set_zero()
 
 
+class IntegrationCommandExecutor(BaseCommandExecutor):
+    @staticmethod
+    def execute(command_type):
+        output = None
+        if command_type == IntegrationCommandType.MOVE_LEVEL:
+            output = IntegrationCommandExecutor.move_level()
+        elif command_type == IntegrationCommandType.SYSTEM_CHECK:
+            output = IntegrationCommandExecutor.system_check()
+
+        return output
+
+    @staticmethod
+    def move_level():
+        mass_command = MassCommandExecutor.move()
+        level_command = LevellingCommandExecutor.level_auto()
+        return mass_command + level_command
+
+    @staticmethod
+    def system_check():
+        return ""
+
+
 if __name__ == "__main__":
-    msg = LevellingCommandExecutor.up_auto("CL-up_a-10")
-    print(msg)
+    msg = IntegrationCommandExecutor.execute(IntegrationCommandType.MOVE_LEVEL)
+    command_list = msg.split("\n")
+    new_list = [command_list.append(cmd + "\n") for cmd in command_list]
+    print(command_list)
+
