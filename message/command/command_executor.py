@@ -1,3 +1,4 @@
+from communication.client import ClientType
 from control.initialisation import Initialisation
 from hardware.gyroscope import Gyroscope
 from hardware.moving_mass import MovingMass
@@ -11,13 +12,19 @@ class BaseCommandExecutor:
 
 
 class LevellingCommandExecutor(BaseCommandExecutor):
+    busy_command_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.LEVEL_ONCE, LevelCommandType.INIT,
+                         LevelCommandType.UP_AUTO, LevelCommandType.DOWN_AUTO]
+
     @staticmethod
-    def execute(command_type, command):
+    def execute(command_type, command=None):
         output = None
+        command_to_send = None
         if command_type == LevelCommandType.INIT:
             output = LevellingCommandExecutor.initialisation()
         elif command_type == LevelCommandType.LEVEL_ONCE:
             output = LevellingCommandExecutor.level_once()
+        elif command_type == LevelCommandType.STATUS:
+            output = LevellingCommandExecutor.check_status()
         elif command_type == LevelCommandType.LEVEL_AUTO:
             output = LevellingCommandExecutor.level_auto()
         elif command_type == LevelCommandType.CONTINUE:
@@ -45,7 +52,12 @@ class LevellingCommandExecutor(BaseCommandExecutor):
         elif command_type == LevelCommandType.STEP:
             output = LevellingCommandExecutor.step(command)
 
-        return output
+        busy_command = True if command_type in LevellingCommandExecutor.busy_command_list else False
+        if output is not None:
+            recipient = ClientType.LEVEL
+            command_to_send = Command(command_type, recipient, busy_command)
+            command_to_send.set_value(output)
+        return command_to_send
 
     @staticmethod
     def stop():
@@ -111,11 +123,18 @@ class LevellingCommandExecutor(BaseCommandExecutor):
     def step(command):
         return "Linit20" + command[-1] + "\n"
 
+    @staticmethod
+    def check_status():
+        return Winches.check_status()
+
 
 class MassCommandExecutor(BaseCommandExecutor):
+    busy_command_list = [MassCommandType.MOVE, MassCommandType.INIT]
+
     @staticmethod
     def execute(command_type, command):
         output = None
+        command_to_send = None
         if command_type == MassCommandType.INIT:
             output = MassCommandExecutor.init()
         elif command_type == MassCommandType.SET:
@@ -127,7 +146,12 @@ class MassCommandExecutor(BaseCommandExecutor):
         elif command_type == MassCommandType.GET:
             output = MassCommandExecutor.get_position()
 
-        return output
+        busy_command = True if command_type in MassCommandExecutor.busy_command_list else False
+        if output is not None:
+            recipient = ClientType.MASS
+            command_to_send = Command(command_type, recipient, busy_command)
+            command_to_send.set_value(output)
+        return command_to_send
 
     @staticmethod
     def init():
@@ -153,13 +177,15 @@ class MassCommandExecutor(BaseCommandExecutor):
 
 
 class GyroCommandExecutor(BaseCommandExecutor):
+    # TODO: check the busy command
+    busy_command_list = [GyroCommandType.ZERO]
+
     @staticmethod
     def execute(command_type):
         output = None
+        command_to_send = None
         if command_type == GyroCommandType.CENTER:
             output = GyroCommandExecutor.center()
-        elif command_type == GyroCommandType.SPIN:
-            output = GyroCommandExecutor.spin()
         elif command_type == GyroCommandType.STOP:
             output = GyroCommandExecutor.stop()
         elif command_type == GyroCommandType.AUTO_ON:
@@ -171,15 +197,16 @@ class GyroCommandExecutor(BaseCommandExecutor):
         elif command_type == GyroCommandType.GET:
             output = GyroCommandExecutor.get_data()
 
-        return output
+        busy_command = True if command_type in GyroCommandExecutor.busy_command_list else False
+        if output is not None:
+            recipient = ClientType.GYRO
+            command_to_send = Command(command_type, recipient, busy_command)
+            command_to_send.set_value(output)
+        return command_to_send
 
     @staticmethod
     def stop():
         return Gyroscope.stop()
-
-    @staticmethod
-    def spin():
-        return Gyroscope.spin()
 
     @staticmethod
     def center():
@@ -210,14 +237,13 @@ class IntegrationCommandExecutor(BaseCommandExecutor):
             output = IntegrationCommandExecutor.move_level()
         elif command_type == IntegrationCommandType.SYSTEM_CHECK:
             output = IntegrationCommandExecutor.system_check()
-
         return output
 
     @staticmethod
     def move_level():
         mass_command = MassCommandExecutor.move()
         level_command = LevellingCommandExecutor.level_auto()
-        return mass_command + level_command
+        return ""
 
     @staticmethod
     def system_check():
@@ -229,4 +255,3 @@ if __name__ == "__main__":
     command_list = msg.split("\n")
     new_list = [command_list.append(cmd + "\n") for cmd in command_list]
     print(command_list)
-

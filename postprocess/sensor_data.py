@@ -1,5 +1,4 @@
 import csv
-import re
 
 
 class DataPostprocess:
@@ -8,14 +7,14 @@ class DataPostprocess:
         self.angle_csv = "angle_data.csv"
         self.load_csv = "load_data.csv"
 
-    def process_data(self, time=True, angle=False):
+    def process_data(self, time=True, angle=True, pattern="L-D-1"):
         data_list = self.extract_time() if time else []
         count = 0
         if angle:
-            pattern = "L-D-1"
+            pattern = pattern
             header = ["time", "roll", "pitch"] if time else ["roll", "pitch"]
         else:
-            pattern = "L-D-2"
+            pattern = pattern
             header = ["time", "load1", "load2", "load3", "load4"] if time else ["load1", "load2", "load3", "load4"]
 
         with open(self.log_filename, 'r') as f:
@@ -52,6 +51,6 @@ class DataPostprocess:
 
 
 if __name__ == "__main__":
-    log_filename = "/Users/manding/work/LiftingFrame/software/mainController/log/level_5_second.log"
-    data = DataPostprocess(log_filename)
-    data.process_data(angle=True)
+    filename = "/Users/manding/work/LiftingFrame/software/mainController/log/server_2022_01_20-12_09_29_PM.log"
+    data = DataPostprocess(filename)
+    data.process_data(angle=True, pattern="L-D-3")

@@ -1,10 +1,6 @@
 class Gyroscope:
 
     @staticmethod
-    def spin():  # DELETE
-        return "Gyro_Spin\n"
-
-    @staticmethod
     def stop():
         return "Gyro_Stop\n"
 

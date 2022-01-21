@@ -20,7 +20,7 @@ def receive():
 def send():
     count = 0
     while True:
-        data = "M100" + str(count)
+        data = "M-D-100" + str(count)
         sock.send(data.encode())
         print("send data:", data)
         count += 1

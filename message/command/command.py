@@ -1,12 +1,24 @@
 from enum import Enum
 
 
+class Command:
+    def __init__(self, command_type, recipient, busy_command=False):
+        self.command_type = command_type
+        self.recipient = recipient
+        self.busy_command = busy_command
+        self.value = None
+
+    def set_value(self, value):
+        self.value = value
+
+
 class LevelCommandType(Enum):
     UP_AUTO = "up_a"
     DOWN_AUTO = "down_a"
     UP_MANUAL = "up_m"
     DOWN_MANUAL = "down_m"
     BATTERY = "battery"
+    STATUS = "status"
     LEVEL_ONCE = "once"
     LEVEL_AUTO = "auto"
     CONTINUE = "continue"
