@@ -5,7 +5,7 @@ class MovingMass:
         return ""
 
     @staticmethod
-    def init():
+    def init(): # remove init
         return "Mass_Init\n"
 
     @staticmethod

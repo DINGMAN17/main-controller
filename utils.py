@@ -24,7 +24,7 @@ class LogMessage:
         log.info("%s is added", client_name)
 
     @staticmethod
-    def wrong_client(log_name="error"):
+    def wrong_client(log_name="warning"):
         log = logging.getLogger(log_name)
         err = "ERROR: wrong client type"
         log.exception(err)
@@ -38,26 +38,26 @@ class LogMessage:
         log.exception("%s is disconnected from server", client_name)
 
     @staticmethod
-    def bad_request(data="", log_name="error"):
+    def bad_request(data="", log_name="warning"):
         log = logging.getLogger(log_name)
         err = "ERROR: bad request/format" + data
         log.exception(err)
         return err
 
     @staticmethod
-    def wrong_command(message, log_name="error"):
+    def wrong_command(message, log_name="warning"):
         log = logging.getLogger(log_name)
         log.exception("wrong command %s", message)
 
     @staticmethod
     def send_command(command, log_name="main"):
         log = logging.getLogger(log_name)
-        log.info("command sent to sub-controller: %s", command)
+        log.info("command sent to {}: {}".format(command.recipient.name, command.command_type.name))
 
     @staticmethod
     def remove_user(log_name="main"):
         log = logging.getLogger(log_name)
-        log.info("Connection error while sending data to user, remove user from list")
+        log.info("Connection warning while sending data to user, remove user from list")
 
     @staticmethod
     def send_to_user(data, log_name="main"):
@@ -67,4 +67,9 @@ class LogMessage:
     @staticmethod
     def receive_data(data, log_name="data"):
         log = logging.getLogger(log_name)
-        log.info("sensor data-%s", data)
+        log.info("data-%s", data)
+
+    @staticmethod
+    def update_client_status(client, status, log_name="main"):
+        log = logging.getLogger(log_name)
+        log.info("status of {} has been updated to: {}".format(client, status))

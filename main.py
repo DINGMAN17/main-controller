@@ -11,7 +11,7 @@ def setup():
     filename_err = "log/server_error_" + timestamp + ".log"
     setup_logger("data", filename_data)
     setup_logger("main", filename_main)
-    setup_logger("error", filename_err)
+    setup_logger("warning", filename_err)
 
 
 def run():

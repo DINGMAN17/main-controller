@@ -13,12 +13,12 @@ class ClientType(Enum):
 class ClientStatus(Enum):
     READY = "ready"
     BUSY = "busy"
-    ERROR = "error"
+    ERROR = "warning"
     LOCK = "lock"
 
 
 class Client:
-    def __init__(self, client_type, socket):
+    def __init__(self, client_type: ClientType, socket):
         self.client_type = client_type
         self.status = None
         self.lock = threading.Lock()
@@ -26,14 +26,15 @@ class Client:
         self.connected = True
 
     def set_disconnect(self):
-        self.connected = False
+        with self.lock:
+            self.connected = False
 
-    def set_status(self, status):
+    def set_status(self, status: ClientStatus):
         with self.lock:
             self.status = status
 
     @staticmethod
-    def identify_client(id_message):
+    def identify_client(id_message: str) -> ClientType:
         # sample id_message for admin: IDadmin
         if not id_message.startswith("ID"):
             raise ValueError("invalid id message")

@@ -11,7 +11,7 @@ sock.send("IDlevel".encode())
 
 
 def receive():
-    status_list = ["L-STATUS-ready", "L-STATUS-busy", "L-STATUS-error", "L-STATUS-lock"]
+    status_list = ["L-STATUS-ready", "L-STATUS-busy", "L-STATUS-warning", "L-STATUS-lock"]
     while True:
         data = sock.recv(1024).decode()
         if data.startswith("Lsensor"):

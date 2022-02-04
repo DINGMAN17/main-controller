@@ -9,19 +9,19 @@ class Initialisation:
     calculate the steps for each motor to initiate initial levelling
     """
 
-    def __init__(self, ppvc_type, pulley_num):
-        self.params = Initialisation.read_parameters(ppvc_type)
+    def __init__(self, ppvc_type, pulley_num, data_filename=None):
+        self.params = Initialisation.read_parameters(ppvc_type, data_filename)
         self.params["pulley_num"] = pulley_num
 
     @staticmethod
-    def read_parameters(ppvc_type):
-        with open('control/ppvc.json') as json_file:
+    def read_parameters(ppvc_type, data_filename):
+        filename = data_filename if data_filename is not None else "control/ppvc.json"
+        with open(filename) as json_file:
             ppvc_database = json.load(json_file)
         return ppvc_database[ppvc_type]
 
     @staticmethod
     def add_parameter(ppvc_dict):
-        # TODO: allow add parameter from UI?
         with open('control/ppvc.json', 'w') as fp:
             json.dump(ppvc_dict, fp)
 

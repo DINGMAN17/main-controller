@@ -1,4 +1,5 @@
-from communication.client import ClientType
+from typing import List
+
 from control.initialisation import Initialisation
 from hardware.gyroscope import Gyroscope
 from hardware.moving_mass import MovingMass
@@ -12,7 +13,7 @@ class BaseCommandExecutor:
 
 
 class LevellingCommandExecutor(BaseCommandExecutor):
-    busy_command_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.LEVEL_ONCE, LevelCommandType.INIT,
+    busy_command_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.LEVEL_ONCE, LevelCommandType.CABLE_INIT,
                          LevelCommandType.UP_AUTO, LevelCommandType.DOWN_AUTO]
 
     @staticmethod
@@ -132,7 +133,7 @@ class MassCommandExecutor(BaseCommandExecutor):
     busy_command_list = [MassCommandType.MOVE, MassCommandType.INIT]
 
     @staticmethod
-    def execute(command_type, command):
+    def execute(command_type, command=None):
         output = None
         command_to_send = None
         if command_type == MassCommandType.INIT:
@@ -177,7 +178,6 @@ class MassCommandExecutor(BaseCommandExecutor):
 
 
 class GyroCommandExecutor(BaseCommandExecutor):
-    # TODO: check the busy command
     busy_command_list = [GyroCommandType.ZERO]
 
     @staticmethod
@@ -240,13 +240,14 @@ class IntegrationCommandExecutor(BaseCommandExecutor):
         return output
 
     @staticmethod
-    def move_level():
-        mass_command = MassCommandExecutor.move()
-        level_command = LevellingCommandExecutor.level_auto()
-        return ""
+    def move_level() -> List[Command]:
+        mass_command = MassCommandExecutor.execute(MassCommandType.MOVE)
+        level_command = LevellingCommandExecutor.execute(LevelCommandType.LEVEL_AUTO)
+        return [mass_command, level_command]
 
     @staticmethod
     def system_check():
+        # TODO: confirm system check commands
         return ""
 
 

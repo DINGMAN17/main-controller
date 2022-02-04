@@ -1,8 +1,10 @@
 from enum import Enum
 
+from communication.client import ClientType
+
 
 class Command:
-    def __init__(self, command_type, recipient, busy_command=False):
+    def __init__(self, command_type, recipient: ClientType, busy_command=False):
         self.command_type = command_type
         self.recipient = recipient
         self.busy_command = busy_command
@@ -24,7 +26,7 @@ class LevelCommandType(Enum):
     CONTINUE = "continue"
     COUNT = "count"
     STOP = "stop"
-    INIT = "init"
+    INIT = "init"  # no init for 1-ton due to hardware problem
     GET = "get"
     MOVE = "move"  # for testing only
     CABLE_INIT = "cable_init"  # for testing only
@@ -40,8 +42,7 @@ class MassCommandType(Enum):
 
 
 class GyroCommandType(Enum):
-    CENTER = "center"
-    SPIN = "spin"
+    CENTER = "center"  # busy
     AUTO_ON = "auto_on"
     AUTO_OFF = "auto_off"
     ZERO = "zero"
