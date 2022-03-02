@@ -51,8 +51,8 @@ class DataPostprocess:
 
 
 if __name__ == "__main__":
-    log_name = ""
-    angle_name = ""
-    load_name = ""
-    data = DataPostprocess(log_name, angle_name, load_name)
-    data.process_data(angle=False, pattern="L-D-2")
+    log_filename = "/Users/manding/work/LiftingFrame/software/mainController/log/server_data_2022_02_18-04_14_14_PM_levelling_with_leica.log"
+    angle_name = "angle_filter_leica.csv"
+    load_name = "load_filter_leica.csv"
+    data = DataPostprocess(log_filename, angle_name, load_name)
+    data.process_data(angle=True, pattern="L-D-3")

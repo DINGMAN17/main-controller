@@ -56,9 +56,10 @@ class SystemExecution:
 
     def start_admin(self):
         threading.Thread(target=self.basic_execution.send_command_process).start()
-        threading.Thread(target=self.basic_execution.send_message_data).start()
+        threading.Thread(target=self.basic_execution.send_message).start()
+        threading.Thread(target=self.basic_execution.send_data).start()
         threading.Thread(target=self.basic_execution.receive_message, args=(self.new_client,)).start()
 
     def start_controller(self):
-        # threading.Thread(target=self.basic_execution.request_data, args=(self.new_client,)).start()
+        threading.Thread(target=self.basic_execution.request_data, args=(self.new_client,)).start()
         threading.Thread(target=self.basic_execution.receive_message, args=(self.new_client,)).start()

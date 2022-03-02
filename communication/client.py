@@ -19,19 +19,33 @@ class ClientStatus(Enum):
 
 class Client:
     def __init__(self, client_type: ClientType, socket):
-        self.client_type = client_type
-        self.status = None
+        self._client_type = client_type
+        self._status = None
         self.lock = threading.Lock()
         self.socket = socket
-        self.connected = True
+        self._connected = True
 
-    def set_disconnect(self):
-        with self.lock:
-            self.connected = False
+    @property
+    def client_type(self):
+        return self._client_type
 
-    def set_status(self, status: ClientStatus):
+    @property
+    def connected(self):
+        return self._connected
+
+    @connected.setter
+    def connected(self, value):
         with self.lock:
-            self.status = status
+            self._connected = value
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, status: ClientStatus):
+        with self.lock:
+            self._status = status
 
     @staticmethod
     def identify_client(id_message: str) -> ClientType:

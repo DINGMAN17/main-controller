@@ -19,6 +19,16 @@ def setup_logger(name, log_file, level=logging.INFO):
 class LogMessage:
 
     @staticmethod
+    def start_server(address: tuple, log_name="main"):
+        log = logging.getLogger(log_name)
+        log.info("SERVER Listening at (%s, %s), ready to accept clients", address[0], address[1])
+
+    @staticmethod
+    def new_unidentified_client(address: tuple, log_name="main"):
+        log = logging.getLogger(log_name)
+        log.info("new client connected at (%s, %s), wait for identification", address[0], address[1])
+
+    @staticmethod
     def add_client(client_name, log_name="main"):
         log = logging.getLogger(log_name)
         log.info("%s is added", client_name)
@@ -36,6 +46,13 @@ class LogMessage:
         if client_name is None:
             client_name = "Unidentified client"
         log.exception("%s is disconnected from server", client_name)
+
+    @staticmethod
+    def command_sent_fail(log_name="warning"):
+        log = logging.getLogger(log_name)
+        err_msg = "intended client is not connected"
+        log.exception(err_msg)
+        return err_msg
 
     @staticmethod
     def bad_request(data="", log_name="warning"):
@@ -73,3 +90,18 @@ class LogMessage:
     def update_client_status(client, status, log_name="main"):
         log = logging.getLogger(log_name)
         log.info("status of {} has been updated to: {}".format(client, status))
+
+    @staticmethod
+    def update_future_task(future_tasks, log_name="task"):
+        log = logging.getLogger(log_name)
+        log.info("future tasks: {}".format(future_tasks))
+
+    @staticmethod
+    def update_current_task(ongoing_tasks, log_name="task"):
+        log = logging.getLogger(log_name)
+        log.info("ongoing tasks: {}".format(ongoing_tasks))
+
+    @staticmethod
+    def update_prev_task(prev_tasks, log_name="task"):
+        log = logging.getLogger(log_name)
+        log.info("previous tasks: {}".format(prev_tasks))

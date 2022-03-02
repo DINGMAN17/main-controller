@@ -1,9 +1,8 @@
-import logging
 import threading
-from datetime import datetime
 import socket
 
 from communication.client_handler import ClientHandler
+from utils import LogMessage
 
 
 class ControlServer:
@@ -13,30 +12,27 @@ class ControlServer:
 
     def run(self):
         self.connect()
-        self.listen()
+        self.accept_client()
 
     def connect(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_ip = socket.gethostbyname(socket.gethostname())
         port = 8080
+        host_ip = "192.168.1.6"
         socket_address = (host_ip, port)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(socket_address)
         self.socket.listen(5)
 
-        logging.info('SERVER Listening at (%s, %s)', host_ip, port)
-        print('SERVER Listening at (%s, %s)', host_ip, port)
+        LogMessage.start_server((host_ip, port))
 
-    def listen(self):
+    def accept_client(self):
         client_handler = ClientHandler()
         while True:
             client_socket, address = self.socket.accept()
             client_socket.setblocking(False)
-            logging.info("new client connected at (%s, %s)", address[0], address[1])
+            LogMessage.new_unidentified_client(address)
             client_socket.settimeout(self.timeout)
-            print(datetime.now())
-            print('CLIENT Connected:', client_socket, '\n')
-
             threading.Thread(target=client_handler.run, args=(client_socket,)).start()
 
 

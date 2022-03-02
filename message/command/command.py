@@ -1,20 +1,11 @@
 from enum import Enum
 
-from communication.client import ClientType
+
+class BaseCommandType(Enum):
+    pass
 
 
-class Command:
-    def __init__(self, command_type, recipient: ClientType, busy_command=False):
-        self.command_type = command_type
-        self.recipient = recipient
-        self.busy_command = busy_command
-        self.value = None
-
-    def set_value(self, value):
-        self.value = value
-
-
-class LevelCommandType(Enum):
+class LevelCommandType(BaseCommandType):
     UP_AUTO = "up_a"
     DOWN_AUTO = "down_a"
     UP_MANUAL = "up_m"
@@ -33,7 +24,7 @@ class LevelCommandType(Enum):
     STEP = "step"  # move winch individually, follow init command format
 
 
-class MassCommandType(Enum):
+class MassCommandType(BaseCommandType):
     SET = "set"
     MOVE = "move"
     STOP = "stop"
@@ -41,7 +32,7 @@ class MassCommandType(Enum):
     GET = "get"
 
 
-class GyroCommandType(Enum):
+class GyroCommandType(BaseCommandType):
     CENTER = "center"  # busy
     AUTO_ON = "auto_on"
     AUTO_OFF = "auto_off"
@@ -50,6 +41,7 @@ class GyroCommandType(Enum):
     GET = "get"
 
 
-class IntegrationCommandType(Enum):
+class IntegrationCommandType(BaseCommandType):
     MOVE_LEVEL = "move_level"  # A-C-I-move_level
+    E_STOP = "Estop"
     SYSTEM_CHECK = "check"

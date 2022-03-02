@@ -5,10 +5,6 @@ class MovingMass:
         return ""
 
     @staticmethod
-    def init(): # remove init
-        return "Mass_Init\n"
-
-    @staticmethod
     def set_movement(x_position, y_position):
         return "Mass_setPos_" + str(x_position) + str(y_position) + "\n"
 
@@ -19,5 +15,3 @@ class MovingMass:
     @staticmethod
     def stop():
         return "Mass_stop\n"
-
-

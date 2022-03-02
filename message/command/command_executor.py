@@ -1,11 +1,21 @@
-from typing import List
+from dataclasses import dataclass
+from typing import List, Tuple
 
+from communication.client import ClientType
 from control.initialisation import Initialisation
 from hardware.gyroscope import Gyroscope
 from hardware.moving_mass import MovingMass
 from hardware.sensors import *
 from hardware.winches import Winches
 from message.command.command import *
+
+
+@dataclass(frozen=True)
+class Command:
+    command_type: BaseCommandType
+    recipient: ClientType
+    value: str
+    busy_command: bool
 
 
 class BaseCommandExecutor:
@@ -56,8 +66,7 @@ class LevellingCommandExecutor(BaseCommandExecutor):
         busy_command = True if command_type in LevellingCommandExecutor.busy_command_list else False
         if output is not None:
             recipient = ClientType.LEVEL
-            command_to_send = Command(command_type, recipient, busy_command)
-            command_to_send.set_value(output)
+            command_to_send = Command(command_type, recipient, output, busy_command)
         return command_to_send
 
     @staticmethod
@@ -130,15 +139,13 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
 
 class MassCommandExecutor(BaseCommandExecutor):
-    busy_command_list = [MassCommandType.MOVE, MassCommandType.INIT]
+    busy_command_list = [MassCommandType.MOVE]
 
     @staticmethod
     def execute(command_type, command=None):
         output = None
         command_to_send = None
-        if command_type == MassCommandType.INIT:
-            output = MassCommandExecutor.init()
-        elif command_type == MassCommandType.SET:
+        if command_type == MassCommandType.SET:
             output = MassCommandExecutor.set_position(command)
         elif command_type == MassCommandType.MOVE:
             output = MassCommandExecutor.move()
@@ -150,17 +157,12 @@ class MassCommandExecutor(BaseCommandExecutor):
         busy_command = True if command_type in MassCommandExecutor.busy_command_list else False
         if output is not None:
             recipient = ClientType.MASS
-            command_to_send = Command(command_type, recipient, busy_command)
-            command_to_send.set_value(output)
+            command_to_send = Command(command_type, recipient, output, busy_command)
         return command_to_send
 
     @staticmethod
-    def init():
-        return MovingMass.init()
-
-    @staticmethod
     def set_position(command):
-        # sample command: CM-set-X100,Y200
+        # sample command: A-C-M-set-X100,Y200
         position = command[-1].split(",")
         return MovingMass.set_movement(position[0], position[1])
 
@@ -178,7 +180,7 @@ class MassCommandExecutor(BaseCommandExecutor):
 
 
 class GyroCommandExecutor(BaseCommandExecutor):
-    busy_command_list = [GyroCommandType.ZERO]
+    busy_command_list = [GyroCommandType.ZERO, GyroCommandType.AUTO_ON]
 
     @staticmethod
     def execute(command_type):
@@ -200,8 +202,7 @@ class GyroCommandExecutor(BaseCommandExecutor):
         busy_command = True if command_type in GyroCommandExecutor.busy_command_list else False
         if output is not None:
             recipient = ClientType.GYRO
-            command_to_send = Command(command_type, recipient, busy_command)
-            command_to_send.set_value(output)
+            command_to_send = Command(command_type, recipient, output, busy_command)
         return command_to_send
 
     @staticmethod
@@ -235,6 +236,8 @@ class IntegrationCommandExecutor(BaseCommandExecutor):
         output = None
         if command_type == IntegrationCommandType.MOVE_LEVEL:
             output = IntegrationCommandExecutor.move_level()
+        elif command_type == IntegrationCommandType.E_STOP:
+            output, E_stop = IntegrationCommandExecutor.E_stop()
         elif command_type == IntegrationCommandType.SYSTEM_CHECK:
             output = IntegrationCommandExecutor.system_check()
         return output
@@ -246,6 +249,13 @@ class IntegrationCommandExecutor(BaseCommandExecutor):
         return [mass_command, level_command]
 
     @staticmethod
+    def E_stop() -> List[Command]:
+        mass_cmd = MassCommandExecutor.execute(MassCommandType.STOP)
+        level_cmd = LevellingCommandExecutor.execute(LevelCommandType.STOP)
+        gyro_cmd = GyroCommandExecutor.execute(GyroCommandType.STOP)
+        return [mass_cmd, level_cmd, gyro_cmd]
+
+    @staticmethod
     def system_check():
         # TODO: confirm system check commands
         return ""
@@ -253,6 +263,3 @@ class IntegrationCommandExecutor(BaseCommandExecutor):
 
 if __name__ == "__main__":
     msg = IntegrationCommandExecutor.execute(IntegrationCommandType.MOVE_LEVEL)
-    command_list = msg.split("\n")
-    new_list = [command_list.append(cmd + "\n") for cmd in command_list]
-    print(command_list)

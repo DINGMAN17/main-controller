@@ -1,15 +1,16 @@
-from typing import List
 
 from message.command.command_executor import *
+from message.command.command_executor import Command
 from message.message import MessageRecipientType
 from utils import LogMessage
 
 
 class CommandInvoker:
     @staticmethod
-    def invoke(message: str) -> list:
+    def invoke(message: str) -> Tuple[BaseCommandType, List[Command]]:
         # sample message: L-C-init, C:command; L:levelling
         try:
+            command = None
             commands_to_send = []
             msg_components = message.split("-")
             recipient_type = MessageRecipientType(msg_components[1])
@@ -29,7 +30,7 @@ class CommandInvoker:
                 command = CommandInvoker.get_integration_command(msg_components[2])
                 command_to_send = IntegrationCommandExecutor.execute(command)
                 commands_to_send.extend(command_to_send)
-            return commands_to_send
+            return command, commands_to_send
         except (ValueError, IndexError) as e:
             LogMessage.wrong_command(message)
 
