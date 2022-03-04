@@ -61,5 +61,5 @@ class SystemExecution:
         threading.Thread(target=self.basic_execution.receive_message, args=(self.new_client,)).start()
 
     def start_controller(self):
-        threading.Thread(target=self.basic_execution.request_data, args=(self.new_client,)).start()
+        # threading.Thread(target=self.basic_execution.request_data, args=(self.new_client,)).start()
         threading.Thread(target=self.basic_execution.receive_message, args=(self.new_client,)).start()

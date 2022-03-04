@@ -14,7 +14,7 @@ class ClientStatus(Enum):
     READY = "ready"
     BUSY = "busy"
     ERROR = "warning"
-    LOCK = "lock"
+    LOCK = "lock" # when the system is stopping
 
 
 class Client:

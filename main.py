@@ -24,5 +24,4 @@ def run():
 if __name__ == "__main__":
     run()
 
-# TODO: fix gyro status update after execution
 # TODO: remove UTF8 control characters from gyro message

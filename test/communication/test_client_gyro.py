@@ -5,7 +5,7 @@ import time
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server_address = ("192.168.8.154", 8080)
+server_address = ("192.168.10.104", 8080)
 sock.connect(server_address)
 sock.send("IDgyro".encode())
 time.sleep(1)
@@ -17,13 +17,13 @@ def receive():
         command = sock.recv(1024).decode()
         print(command)
         if "AutoOn" in command:
-            time.sleep(2)
+            time.sleep(3)
             sock.send("G-INFO-AUTOON\n".encode())
         elif "AutoOff" in command:
-            time.sleep(2)
+            time.sleep(3)
             sock.send("G-INFO-AUTOOFFSELECT\n".encode())
         elif "Stop" in command:
-            time.sleep(3)
+            time.sleep(5)
             sock.sendall("G-INFO-STOPPED\n".encode())
         elif "GetYaw" in command:
             data = generate_gyro_data()

@@ -1,7 +1,7 @@
 import queue
 import threading
 import time
-from typing import Optional
+from typing import Optional, Tuple
 
 from communication.client import ClientStatus, Client
 from control.task_list import Tasks, Task, TaskStatus
@@ -64,21 +64,25 @@ class BasicExecution:
             self.ensure_client_availability(recipient)
         recipient.socket.sendall(command.value.encode())
         LogMessage.send_command(command)
-        if command.busy_command:
+        if command.lock_system:
+            recipient.status = ClientStatus.LOCK
+            LogMessage.update_client_status(recipient.client_type, recipient.status)
+        elif command.busy_command:
             recipient.status = ClientStatus.BUSY
+            LogMessage.update_client_status(recipient.client_type, recipient.status)
             self.tasks_list.start_task(command)
 
     def ensure_client_availability(self, recipient):
-        # TODO: think about if the status is different from the system indication
+        # TODO: think about what to do if the status is different from the system indication
         self.acquire_status(recipient)
         error_count = 0
         while recipient.status != ClientStatus.READY:
             self.acquire_status(recipient)
             error_count += 1
             if error_count >= 10:
-                # TODO: handle warning!!
-                raise SystemError("There's a conflict in the status")
-            time.sleep(10)
+                print("There's a conflict in the status")
+                # raise SystemError("There's a conflict in the status")
+            time.sleep(3)
 
     def acquire_status(self, recipient: Client):
         status_cmd = recipient.client_type.name[0] + "status\n"
@@ -190,6 +194,7 @@ class BasicExecution:
             self.tasks_list.current_integrated_command = self.info_controller.integrated_command
             output_info, output_command, output_status = (output_dict.get(key) for key in ["info", "command", "status"])
             if output_info is not None:
+                # TODO: solve update on going task for integrated process
                 # self.update_on_going_task(output_info)
                 self.info_queue.put(output_info.value)
             if output_command is not None:

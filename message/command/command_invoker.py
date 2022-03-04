@@ -1,3 +1,4 @@
+from typing import Tuple
 
 from message.command.command_executor import *
 from message.command.command_executor import Command

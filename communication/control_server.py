@@ -18,7 +18,6 @@ class ControlServer:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         host_ip = socket.gethostbyname(socket.gethostname())
         port = 8080
-        host_ip = "192.168.1.6"
         socket_address = (host_ip, port)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(socket_address)

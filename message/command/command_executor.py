@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List
 
 from communication.client import ClientType
 from control.initialisation import Initialisation
@@ -16,6 +16,7 @@ class Command:
     recipient: ClientType
     value: str
     busy_command: bool
+    lock_system: bool
 
 
 class BaseCommandExecutor:
@@ -64,9 +65,10 @@ class LevellingCommandExecutor(BaseCommandExecutor):
             output = LevellingCommandExecutor.step(command)
 
         busy_command = True if command_type in LevellingCommandExecutor.busy_command_list else False
+        lock_system = True if command_type == LevelCommandType.STOP else False
         if output is not None:
             recipient = ClientType.LEVEL
-            command_to_send = Command(command_type, recipient, output, busy_command)
+            command_to_send = Command(command_type, recipient, output, busy_command, lock_system)
         return command_to_send
 
     @staticmethod
@@ -155,9 +157,10 @@ class MassCommandExecutor(BaseCommandExecutor):
             output = MassCommandExecutor.get_position()
 
         busy_command = True if command_type in MassCommandExecutor.busy_command_list else False
+        lock_system = True if command_type == MassCommandType.STOP else False
         if output is not None:
             recipient = ClientType.MASS
-            command_to_send = Command(command_type, recipient, output, busy_command)
+            command_to_send = Command(command_type, recipient, output, busy_command, lock_system)
         return command_to_send
 
     @staticmethod
@@ -180,7 +183,7 @@ class MassCommandExecutor(BaseCommandExecutor):
 
 
 class GyroCommandExecutor(BaseCommandExecutor):
-    busy_command_list = [GyroCommandType.ZERO, GyroCommandType.AUTO_ON]
+    busy_command_list = [GyroCommandType.ZERO, GyroCommandType.AUTO_ON, GyroCommandType.AUTO_OFF]
 
     @staticmethod
     def execute(command_type):
@@ -200,9 +203,10 @@ class GyroCommandExecutor(BaseCommandExecutor):
             output = GyroCommandExecutor.get_data()
 
         busy_command = True if command_type in GyroCommandExecutor.busy_command_list else False
+        lock_system = True if command_type == GyroCommandType.STOP else False
         if output is not None:
             recipient = ClientType.GYRO
-            command_to_send = Command(command_type, recipient, output, busy_command)
+            command_to_send = Command(command_type, recipient, output, busy_command, lock_system)
         return command_to_send
 
     @staticmethod
@@ -231,6 +235,7 @@ class GyroCommandExecutor(BaseCommandExecutor):
 
 
 class IntegrationCommandExecutor(BaseCommandExecutor):
+    # TODO: consider how to stop integrated process
     @staticmethod
     def execute(command_type):
         output = None

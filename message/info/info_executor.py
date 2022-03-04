@@ -19,9 +19,9 @@ class MassInfoExecutor:
         output_status: Optional[List[Tuple[ClientType, ClientStatus]]] = None
         if info_type == MassInfoType.MOVE_DONE:
             output_info, output_status = MassInfoExecutor.move_finish()
-        if info_type == MassInfoType.STOP_DONE:
+        elif info_type == MassInfoType.STOP_DONE:
             output_info, output_status = MassInfoExecutor.stop_finish()
-        if info_type == MassInfoType.SET_DONE:
+        elif info_type == MassInfoType.SET_DONE:
             output_info = MassInfoExecutor.set_pos_finish()
         if output_info is not None:
             output_dict["info"] = output_info
@@ -106,13 +106,13 @@ class GyroInfoExecutor:
         output_status = None
         if info_type == GyroInfoType.ZERO_DONE:
             output_info, output_status = GyroInfoExecutor.zero_finish()
-        if info_type == GyroInfoType.STOP_DONE:
+        elif info_type == GyroInfoType.STOP_DONE:
             output_info, output_status = GyroInfoExecutor.stop_finish()
-        if info_type == GyroInfoType.AUTO_ON_DONE:
+        elif info_type == GyroInfoType.AUTO_ON_DONE:
             output_info, output_status = GyroInfoExecutor.auto_on_finish()
-        if info_type == GyroInfoType.AUTO_OFF_DONE:
+        elif info_type == GyroInfoType.AUTO_OFF_DONE:
             output_info, output_status = GyroInfoExecutor.auto_off_finish()
-        if info_type == GyroInfoType.CENTER_DONE:
+        elif info_type == GyroInfoType.CENTER_DONE:
             output_info, output_status = GyroInfoExecutor.center_finish()
         if output_info is not None:
             output_dict["info"] = output_info
