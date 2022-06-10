@@ -19,6 +19,7 @@ class AdminController:
         self.command_invoker = CommandInvoker()
         self._admin_command_queue = queue.Queue()
         self._latest_command = None
+        self._latest_integrated_command_type = None
 
     @property
     def latest_command(self):
@@ -66,6 +67,7 @@ class AdminController:
         self.command_invoker.msg_components = msg
         self.command_invoker.invoke()
         commands_list = self.command_invoker.commands_to_send
+        self._latest_integrated_command_type = self.command_invoker.command_type
         [self.add_command_to_queue(cmd) for cmd in commands_list if cmd is not None]
 
     def send_command_loop(self):
@@ -85,7 +87,7 @@ class AdminController:
                 raise SendCommandStatusCheckFailException()
             recipient = self.status_controller.get_subsystem_client(command.recipient)
             self.send_command(recipient, command)
-            self.latest_command = command
+            self._latest_command = command
             self.update_after_sending_command()
 
     def send_command(self, recipient, command):
@@ -116,6 +118,6 @@ class AdminController:
             print("AdminDisconnectException")
 
     def update_integrated_command(self):
-        if self.latest_command.command_type.name in IntegrationCommandType.__members__:
-            self.status_controller.current_integrated_command = self.latest_command
+        if self._latest_integrated_command_type.name in IntegrationCommandType.__members__:
+            self.status_controller.current_integrated_command = self._latest_integrated_command_type
 

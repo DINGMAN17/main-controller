@@ -56,8 +56,8 @@ class MassInfoExecutor(BaseInfoExecutor):
             self.set_pos_finish()
         if self._output_info_type is not None:
             self.output_dict["info_type"] = self._output_info_type
-        if self._output_status is not None:
-            self.output_dict['status'] = self._output_status
+        if self._output_status:
+            self.output_dict["status"] = self._output_status
         return self.output_dict
 
     def set_pos_finish(self):

@@ -21,7 +21,8 @@ class TestMassInfoExecutor:
         output_results = mass_executor.execute()
         expect_output_info, expect_output_status = expect_results
         assert output_results['info_type'] == expect_output_info
-        assert output_results['status'] == expect_output_status
+        if expect_output_status:
+            assert output_results['status'] == expect_output_status
 
 
 class TestLevelInfoExecutor:

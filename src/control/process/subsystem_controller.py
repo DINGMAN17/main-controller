@@ -21,7 +21,7 @@ class SubsystemController:
         self.system_command_queue = queue.Queue()
         self.status_controller = status_controller
         self.send_info_to_admin = False
-        self._lock = threading.RLock()
+        self._lock = threading.Lock()
 
         self.info_invoker = InfoInvoker()
 
@@ -49,25 +49,29 @@ class SubsystemController:
             threading.Thread(target=self.send_update_to_admin_from_subcontroller(), ).start()
 
     def request_data_thread(self, client: Client, interval=60):
-        with self._lock:
-            while client.connected:
-                try:
-                    command = self.get_data(client.client_type)
-                    client.tcp_service.send_message(command)
-                    time.sleep(interval)
-                except ClientDisconnectException:
-                    print('subsystem disconnected')
+        while client.connected:
+            try:
+                command = self.get_data(client.client_type)
+                client.tcp_service.send_message(command)
+                time.sleep(interval)
+            except ClientDisconnectException:
+                print('subsystem disconnected')
+                break
 
     def get_data(self, client_type):
-        with self._lock:
-            command = None
-            if client_type == ClientType.MASS:
-                command = MassCommandExecutor.get_position()
-            elif client_type == ClientType.GYRO:
-                command = GyroCommandExecutor.get_data()
-            elif client_type == ClientType.LEVEL:
-                command = LevellingCommandExecutor.request_data()
-            return command
+        command = None
+        if client_type == ClientType.MASS:
+            command = MassCommandExecutor.get_position()
+        elif client_type == ClientType.GYRO:
+            command = GyroCommandExecutor.get_data()
+        elif client_type == ClientType.LEVEL:
+            command = LevellingCommandExecutor.request_data()
+        return command
+
+    def send_system_command(self, system_cmd):
+        recipient = self.status_controller.get_subsystem_client(system_cmd.recipient)
+        recipient.tcp_service.send_message(system_cmd.value)
+        LogMessage.send_command(system_cmd)
 
     def receive_message_thread(self, client: Client):
         while client.connected:
@@ -134,10 +138,11 @@ class SubsystemController:
         self.status_controller.update_and_add_status(client_type, client_status)
 
     def update_system_command(self, output_command: list):
-        with self._lock:
-            for cmd in output_command:
-                self.system_command_queue.put(cmd)
-                # TODO: add task to future task
+        print("update system command")
+        for cmd in output_command:
+            self.send_system_command(cmd)
+            self.system_command_queue.put(cmd)
+            # TODO: add task to future task
 
     def send_update_to_admin_from_subcontroller(self):
         while self.status_controller.admin is not None and self.status_controller.get_admin_connection_state():

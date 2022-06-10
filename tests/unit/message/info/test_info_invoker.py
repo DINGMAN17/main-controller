@@ -33,7 +33,8 @@ class TestInfoInvoker:
         outputs = info_invoker.invoke()
         expect_output_info, expect_output_status = expect_results
         assert outputs['info_type'] == expect_output_info
-        assert outputs['status'] == expect_output_status
+        if expect_output_status:
+            assert outputs['status'] == expect_output_status
 
     @pytest.mark.parametrize(
         "input_info_msg, expect_results",

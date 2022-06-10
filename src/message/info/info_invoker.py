@@ -47,20 +47,19 @@ class InfoInvoker:
     def invoke(self):
         # e.g. M-INFO-moved; L-INFO-BAT-4
         try:
-            with self.lock:
-                client_type = ClientType(self.msg_components[0])
-                self.get_info_type(client_type)
-                if self._integrated_command is None:
-                    if client_type == ClientType.MASS:
-                        self.process_info(self.mass_executor)
-                    elif client_type == ClientType.LEVEL:
-                        self.process_info(self.level_executor)
-                    elif client_type == ClientType.GYRO:
-                        self.process_info(self.gyro_executor)
-                else:
-                    self.output_dict = IntegratedInfoExecutor.execute(self._info_type, self._integrated_command)
-                    self.update_integrated_command()
-                return self.output_dict
+            client_type = ClientType(self.msg_components[0])
+            self.get_info_type(client_type)
+            if self._integrated_command is None:
+                if client_type == ClientType.MASS:
+                    self.process_info(self.mass_executor)
+                elif client_type == ClientType.LEVEL:
+                    self.process_info(self.level_executor)
+                elif client_type == ClientType.GYRO:
+                    self.process_info(self.gyro_executor)
+            else:
+                self.output_dict = IntegratedInfoExecutor.execute(self._info_type, self._integrated_command)
+                self.update_integrated_command()
+            return self.output_dict
         except ValueError as e:
             logging.exception("wrong info message %s", "-".join(self.msg_components))
 
