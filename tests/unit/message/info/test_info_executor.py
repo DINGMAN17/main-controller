@@ -93,7 +93,10 @@ class TestIntegratedInfoExecutor:
     )
     def test_execute(self, input_info_type, expect_results):
         integrated_command = IntegrationCommandType.MOVE_LEVEL
-        output_dict = IntegratedInfoExecutor.execute(input_info_type, integrated_command)
+        integrate_executor = IntegratedInfoExecutor()
+        integrate_executor.integrated_command = integrated_command
+        integrate_executor.reset(input_info_type)
+        output_dict = integrate_executor.execute()
         expect_info, expect_status, expect_command_list = expect_results
         assert output_dict['info_type'] == expect_info
         if expect_status is not None:

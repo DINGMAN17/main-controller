@@ -10,6 +10,7 @@ from src.control.process.status_controller import StatusController
 from src.message.command.command import IntegrationCommandType
 from src.message.command.command_executor import Command
 from src.message.command.command_invoker import CommandInvoker
+from src.message.exceptions.command_exception import InvalidCommandTypeException
 from src.utils.logging import LogMessage
 
 
@@ -18,16 +19,16 @@ class AdminController:
         self.status_controller = status_controller
         self.command_invoker = CommandInvoker()
         self._admin_command_queue = queue.Queue()
-        self._latest_command = None
-        self._latest_integrated_command_type = None
+        self._latest_sent_command = None
+        self._latest_input_command_type = None
 
     @property
     def latest_command(self):
-        return self._latest_command
+        return self._latest_sent_command
 
     @latest_command.setter
     def latest_command(self, command):
-        self._latest_command = command
+        self._latest_sent_command = command
 
     @property
     def admin_command_queue(self):
@@ -67,8 +68,11 @@ class AdminController:
         self.command_invoker.msg_components = msg
         self.command_invoker.invoke()
         commands_list = self.command_invoker.commands_to_send
-        self._latest_integrated_command_type = self.command_invoker.command_type
-        [self.add_command_to_queue(cmd) for cmd in commands_list if cmd is not None]
+        self._latest_input_command_type = self.command_invoker.command_type
+        try:
+            [self.add_command_to_queue(cmd) for cmd in commands_list if cmd is not None]
+        except InvalidCommandTypeException:
+            pass
 
     def send_command_loop(self):
         while self.get_admin_connection_state():
@@ -87,7 +91,7 @@ class AdminController:
                 raise SendCommandStatusCheckFailException()
             recipient = self.status_controller.get_subsystem_client(command.recipient)
             self.send_command(recipient, command)
-            self._latest_command = command
+            self._latest_sent_command = command
             self.update_after_sending_command()
 
     def send_command(self, recipient, command):
@@ -118,6 +122,6 @@ class AdminController:
             print("AdminDisconnectException")
 
     def update_integrated_command(self):
-        if self._latest_integrated_command_type.name in IntegrationCommandType.__members__:
-            self.status_controller.current_integrated_command = self._latest_integrated_command_type
+        if self._latest_input_command_type.name in IntegrationCommandType.__members__:
+            self.status_controller.current_integrated_command = self._latest_input_command_type
 

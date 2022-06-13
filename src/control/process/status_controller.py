@@ -36,8 +36,7 @@ class StatusController(Singleton):
     @current_integrated_command.setter
     def current_integrated_command(self, integrated_command):
         with self._lock:
-            if integrated_command is not None:
-                self._current_integrated_command = integrated_command
+            self._current_integrated_command = integrated_command
 
     @property
     def admin(self):

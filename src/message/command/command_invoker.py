@@ -52,6 +52,7 @@ class CommandInvoker:
                 self.process_command(self.integrated_command_executor)
         except (ValueError, IndexError) as e:
             # LogMessage.wrong_command(self.msg_components)
+            raise InvalidCommandTypeException
             pass
 
     def process_command(self, executor: BaseCommandExecutor):

@@ -131,20 +131,19 @@ class SubsystemController:
         self.status_controller.current_integrated_command = self.info_invoker.integrated_command
 
     def update_incoming_integrated_command(self):
-        if self.status_controller.current_integrated_command is not None:
-            self.info_invoker.integrated_command = self.status_controller.current_integrated_command
+        self.info_invoker.integrated_command = self.status_controller.current_integrated_command
 
     def update_status(self, client_type, client_status):
         self.status_controller.update_and_add_status(client_type, client_status)
 
     def update_system_command(self, output_command: list):
-        print("update system command")
         for cmd in output_command:
             self.send_system_command(cmd)
             self.system_command_queue.put(cmd)
             # TODO: add task to future task
 
     def send_update_to_admin_from_subcontroller(self):
+        # TODO: change the operating sequence, must be available as soon as admin is connected
         while self.status_controller.admin is not None and self.status_controller.get_admin_connection_state():
             self.send_info_to_admin = True
             data_list = [msg_queue.get() for msg_queue in

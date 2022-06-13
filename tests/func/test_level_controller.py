@@ -5,7 +5,7 @@ import random
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server_address = ('172.23.10.38', 8080)
+server_address = ('127.0.0.1', 8080)
 sock.connect(server_address)
 sock.send("IDlevel".encode())
 time.sleep(2)

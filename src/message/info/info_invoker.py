@@ -13,6 +13,7 @@ class InfoInvoker:
         self.level_executor = LevelInfoExecutor()
         self.mass_executor = MassInfoExecutor()
         self.gyro_executor = GyroInfoExecutor()
+        self.integration_executor = IntegratedInfoExecutor()
         self._msg_components: Optional[list] = None
         self._info_type: Optional[BaseInfoType] = None
         self._integrated_command: Optional[IntegrationCommandType] = None
@@ -57,7 +58,8 @@ class InfoInvoker:
                 elif client_type == ClientType.GYRO:
                     self.process_info(self.gyro_executor)
             else:
-                self.output_dict = IntegratedInfoExecutor.execute(self._info_type, self._integrated_command)
+                self.integration_executor.integrated_command = self._integrated_command
+                self.process_info(self.integration_executor)
                 self.update_integrated_command()
             return self.output_dict
         except ValueError as e:
@@ -69,8 +71,9 @@ class InfoInvoker:
 
     def update_integrated_command(self):
         # integrated operation done, clear command
-        if self.get_output_status() is not None:
-            self.integrated_command = None
+        output_status = self.get_output_status()
+        if (self._integrated_command is not None) and (output_status is not None):
+            self._integrated_command = self.integration_executor.integrated_command = None
 
     def get_info_type(self, client_type):
         if client_type == ClientType.MASS:

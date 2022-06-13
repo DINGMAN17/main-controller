@@ -2,7 +2,7 @@ from typing import List, Tuple, Optional
 
 from src.communication.client import ClientStatus, ClientType
 from src.message.command.command import LevelCommandType, IntegrationCommandType
-from src.message.command.command_executor import LevellingCommandExecutor
+from src.message.command.command_executor import LevellingCommandExecutor, Command
 from src.message.info.info import MassInfoType, AdminInfoType, LevelInfoType, GyroInfoType, BaseInfoType
 
 
@@ -42,6 +42,12 @@ class BaseInfoExecutor:
         self._output_status = []
         self._output_info_type = self._output_info_msg = None
 
+    def update_outputs(self):
+        if self._output_info_type is not None:
+            self.output_dict["info_type"] = self._output_info_type
+        if self._output_status:
+            self.output_dict["status"] = self._output_status
+
 
 class MassInfoExecutor(BaseInfoExecutor):
     def __init__(self):
@@ -54,10 +60,7 @@ class MassInfoExecutor(BaseInfoExecutor):
             self.stop_finish()
         elif self._info_type == MassInfoType.SET_DONE:
             self.set_pos_finish()
-        if self._output_info_type is not None:
-            self.output_dict["info_type"] = self._output_info_type
-        if self._output_status:
-            self.output_dict["status"] = self._output_status
+        self.update_outputs()
         return self.output_dict
 
     def set_pos_finish(self):
@@ -91,10 +94,7 @@ class LevelInfoExecutor(BaseInfoExecutor):
             self.init_finish()
         elif self._info_type == LevelInfoType.CABLE_INIT_DONE:
             self.cable_init_finish()
-        if self._output_info_type is not None:
-            self.output_dict["info_type"] = self._output_info_type
-        if self._output_status is not None:
-            self.output_dict['status'] = self._output_status
+        self.update_outputs()
         if self._output_info_msg is not None:
             self.output_dict['info_msg'] = self._output_info_msg
         return self.output_dict
@@ -144,10 +144,7 @@ class GyroInfoExecutor(BaseInfoExecutor):
             self.auto_off_finish()
         elif self._info_type == GyroInfoType.CENTER_DONE:
             self.center_finish()
-        if self._output_info_type is not None:
-            self.output_dict["info_type"] = self._output_info_type
-        if self._output_status is not None:
-            self.output_dict['status'] = self._output_status
+        self.update_outputs()
         return self.output_dict
 
     def zero_finish(self):
@@ -171,25 +168,43 @@ class GyroInfoExecutor(BaseInfoExecutor):
         self._output_status.append(update_ready_status(ClientType.GYRO))
 
 
-class IntegratedInfoExecutor:
+class IntegratedInfoExecutor(BaseInfoExecutor):
+
+    def __init__(self):
+        super().__init__()
+        self._integrated_command = None
+        self._output_command: Optional[Command] = None
+
+    @property
+    def integrated_command(self):
+        return self._integrated_command
+
+    @integrated_command.setter
+    def integrated_command(self, command):
+        self._integrated_command = command
+
+    def reset(self, info_type, msg_components=None):
+        super(IntegratedInfoExecutor, self).reset(info_type, msg_components)
+        self._output_command = None
+
+    def update_outputs(self):
+        super(IntegratedInfoExecutor, self).update_outputs()
+        if self._output_status:
+            if not isinstance(self._output_status, list):
+                self._output_status = [self._output_status]
+            self.output_dict['status'] = self._output_status
+        if self._output_command is not None:
+            if not isinstance(self._output_command, list):
+                self._output_command = [self._output_command]
+            self.output_dict['command'] = self._output_command
+
     # only mass move implemented
-    @staticmethod
-    def execute(info_type: BaseInfoType, integrated_command: IntegrationCommandType):
-        output_dict = dict()
-        output_info = output_status = output_command = None
-        if integrated_command == IntegrationCommandType.MOVE_LEVEL:
-            output_info, output_command, output_status = IntegratedInfoExecutor.MassMoveInfo.execute(info_type)
-        if output_info is not None:
-            output_dict["info_type"] = output_info
-        if output_status is not None:
-            if not isinstance(output_status, list):
-                output_status = [output_status]
-            output_dict['status'] = output_status
-        if output_command is not None:
-            if not isinstance(output_command, list):
-                output_command = [output_command]
-            output_dict['command'] = output_command
-        return output_dict
+    def execute(self):
+        if self.integrated_command == IntegrationCommandType.MOVE_LEVEL:
+            self._output_info_type, self._output_command, self._output_status = IntegratedInfoExecutor.MassMoveInfo.execute(
+                self.info_type)
+        self.update_outputs()
+        return self.output_dict
 
     class MassMoveInfo:
 
