@@ -29,6 +29,9 @@ command_to_add = ((LevelCommandType.LEVEL_ONCE, ClientType.LEVEL, "", True, Fals
 full_config_to_add = ([(ClientType.MASS, ClientStatus.READY), (ClientType.GYRO, ClientStatus.READY),
                        (ClientType.LEVEL, ClientStatus.READY), (ClientType.ADMIN, ClientStatus.READY)],)
 
+full_config_with_busy_client = ([(ClientType.MASS, ClientStatus.READY), (ClientType.GYRO, ClientStatus.READY),
+                                 (ClientType.LEVEL, ClientStatus.BUSY), (ClientType.ADMIN, ClientStatus.READY)],)
+
 
 @pytest.fixture(params=clients_to_add)
 def controller_clients(request):
@@ -42,6 +45,11 @@ def controller_command(request):
 
 @pytest.fixture(params=full_config_to_add)
 def full_config(request):
+    return request.param
+
+
+@pytest.fixture(params=full_config_with_busy_client)
+def full_config_busy_client(request):
     return request.param
 
 
@@ -96,6 +104,20 @@ def admin_controller_setup(request, full_config):
     status_controller = StatusController()
     admin_controller = AdminController(status_controller)
     for client in full_config:
+        new_client = create_client(client[0], client[1])
+        if new_client.client_type == ClientType.ADMIN:
+            admin_controller.status_controller.admin = new_client
+        else:
+            admin_controller.status_controller.add_controller_client(new_client)
+    request.cls.admin_controller = admin_controller
+    yield
+
+
+@pytest.fixture()
+def admin_controller_setup_busy_client(request, full_config_busy_client):
+    status_controller = StatusController()
+    admin_controller = AdminController(status_controller)
+    for client in full_config_busy_client:
         new_client = create_client(client[0], client[1])
         if new_client.client_type == ClientType.ADMIN:
             admin_controller.status_controller.admin = new_client

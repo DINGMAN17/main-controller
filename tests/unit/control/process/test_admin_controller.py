@@ -4,7 +4,7 @@ from src.communication.client import Client, ClientType, ClientStatus
 from src.control.exceptions.process_execptions import SendCommandStatusCheckFailException
 from src.control.process.admin_controller import AdminController
 from src.control.process.status_controller import StatusController
-from src.message.command.command import LevelCommandType, MassCommandType, GyroCommandType, IntegrationCommandType
+from src.message.command.command import LevelCommandType, MassCommandType, GyroCommandType
 from src.message.command.command_executor import Command
 
 
@@ -30,7 +30,7 @@ def test_add_admin_or_user_one_admin(input_users):
 
 
 @pytest.mark.usefixtures("admin_controller_setup")
-class TestAdminController:
+class TestAdminControllerSuccess:
 
     @pytest.mark.parametrize(
         "recv_msg_list, expect_command_list",
@@ -51,7 +51,7 @@ class TestAdminController:
              ),
         ],
     )
-    def test_receive_and_process_command_individual(self, recv_msg_list, expect_command_list, mocker):
+    def test_receive_and_process_command(self, recv_msg_list, expect_command_list, mocker):
         mocker.patch("src.control.process.admin_controller.AdminController.receive_command", return_value=recv_msg_list)
         self.admin_controller.receive_and_process_command()
         for expect_command in expect_command_list:
@@ -80,45 +80,29 @@ class TestAdminController:
              [(ClientType.LEVEL, ClientStatus.BUSY), (ClientType.MASS, ClientStatus.BUSY)]),
         ],
     )
-    def test_send_and_verify_command_individual_success(self, input_command_list, expect_client_status_list, mocker):
+    def test_send_command_and_update_individual(self, input_command_list, expect_client_status_list, mocker):
         mocker.patch("src.control.process.admin_controller.AdminController.send_command", return_value=None)
         for input_command, expect_client_status in zip(input_command_list, expect_client_status_list):
             self.admin_controller.add_command_to_queue(input_command)
+            self.admin_controller.latest_input_command_type = input_command.command_type
             recipient_type, expect_recipient_status = expect_client_status
-            self.admin_controller.send_and_verify_command()
+            self.admin_controller.send_command_and_update()
             assert self.admin_controller \
                        .status_controller.get_subsystem_status(recipient_type) == expect_recipient_status
             assert self.admin_controller.status_controller.current_integrated_command is None
 
-    @pytest.mark.parametrize(
-        "input_integrated_command_list, expect_client_status_list",
-        [
-            ([Command(LevelCommandType.LEVEL_ONCE, ClientType.LEVEL, "Lcmd01L\n", True, False)],
-             [(ClientType.LEVEL, ClientStatus.BUSY)]),
-        ],
-    )
-    def test_send_and_verify_command_integrated_success(self, input_integrated_command_list, expect_client_status_list, mocker):
-        mocker.patch("src.control.process.admin_controller.AdminController.send_command", return_value=None)
 
+@pytest.mark.usefixtures("admin_controller_setup_busy_client")
+class TestAdminControllerFail:
     @pytest.mark.parametrize(
-        "input_command_list, expect_client_status_list",
+        "command_list",
         [
+            ([Command(LevelCommandType.LEVEL_ONCE, ClientType.LEVEL, "Lcmd01L\n", True, False)]),
+
             ([Command(LevelCommandType.LEVEL_ONCE, ClientType.LEVEL, "Lcmd01L\n", True, False),
-              Command(LevelCommandType.LEVEL_ONCE, ClientType.LEVEL, "Lcmd01L\n", True, False)],
-             [(ClientType.LEVEL, ClientStatus.BUSY), (ClientType.LEVEL, None)]),
-
-            ([Command(LevelCommandType.STOP, ClientType.LEVEL, "", False, True),
-              Command(LevelCommandType.LEVEL_ONCE, ClientType.LEVEL, "Lcmd01L\n", True, False)],
-             [(ClientType.LEVEL, ClientStatus.LOCK), (ClientType.LEVEL, None)]),
+              Command(MassCommandType.MOVE, ClientType.MASS, "Mass_move\n", True, False)]),
         ],
     )
-    def test_send_command_status_exception(self, input_command_list, expect_client_status_list, mocker):
-        mocker.patch("src.control.process.admin_controller.AdminController.send_command", return_value=None)
-        for input_command, expect_client_status in zip(input_command_list, expect_client_status_list):
-            self.admin_controller.add_command_to_queue(input_command)
-            recipient_type, expect_recipient_status = expect_client_status
-            if expect_recipient_status is None:
-                with pytest.raises(SendCommandStatusCheckFailException):
-                    self.admin_controller.send_and_verify_command()
-            else:
-                self.admin_controller.send_and_verify_command()
+    def test_add_and_verify_command_to_queue_exception(self, command_list):
+        with pytest.raises(SendCommandStatusCheckFailException):
+            self.admin_controller.add_and_verify_command_to_queue(command_list)

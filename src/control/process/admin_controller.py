@@ -23,12 +23,12 @@ class AdminController:
         self._latest_input_command_type = None
 
     @property
-    def latest_command(self):
-        return self._latest_sent_command
+    def latest_input_command_type(self):
+        return self._latest_input_command_type
 
-    @latest_command.setter
-    def latest_command(self, command):
-        self._latest_sent_command = command
+    @latest_input_command_type.setter
+    def latest_input_command_type(self, input_command):
+        self._latest_input_command_type = input_command
 
     @property
     def admin_command_queue(self):
@@ -65,30 +65,33 @@ class AdminController:
 
     def process_command(self, msg):
         # e.g. A-C-L-stop
-        self.command_invoker.msg_components = msg
-        self.command_invoker.invoke()
-        commands_list = self.command_invoker.commands_to_send
-        self._latest_input_command_type = self.command_invoker.command_type
         try:
-            [self.add_command_to_queue(cmd) for cmd in commands_list if cmd is not None]
+            self.command_invoker.msg_components = msg
+            self.command_invoker.invoke()
+            commands_list = self.command_invoker.commands_to_send
+            self._latest_input_command_type = self.command_invoker.command_type
+            self.add_and_verify_command_to_queue(commands_list)
         except InvalidCommandTypeException:
             pass
+        except SendCommandStatusCheckFailException:
+            pass
+
+    def add_and_verify_command_to_queue(self, commands_list):
+        for cmd in commands_list:
+            if not self.verify_recipient_status(cmd):
+                raise SendCommandStatusCheckFailException()
+        [self.add_command_to_queue(cmd) for cmd in commands_list if self.verify_recipient_status(cmd)]
 
     def send_command_loop(self):
         while self.get_admin_connection_state():
             try:
-                self.send_and_verify_command()
-            except SendCommandStatusCheckFailException as e:
-                err_msg = LogMessage.command_sent_fail()
-                print(err_msg)
+                self.send_command_and_update()
             except ClientDisconnectException:
                 print("AdminDisconnectException")
 
-    def send_and_verify_command(self):
+    def send_command_and_update(self):
         command = self.get_command_from_queue()
         if command is not None:
-            if not self.verify_before_sending(command):
-                raise SendCommandStatusCheckFailException()
             recipient = self.status_controller.get_subsystem_client(command.recipient)
             self.send_command(recipient, command)
             self._latest_sent_command = command
@@ -98,7 +101,7 @@ class AdminController:
         recipient.tcp_service.send_message(command.value)
         LogMessage.send_command(command)
 
-    def verify_before_sending(self, command: Command):
+    def verify_recipient_status(self, command: Command):
         if command.busy_command:
             recipient_status_check = self.status_controller.check_recipient_status_for_busy_command(command.recipient)
             return recipient_status_check
@@ -115,7 +118,7 @@ class AdminController:
     def update_after_sending_command(self):
         try:
             # update the status of sub controller
-            self.status_controller.update_recipient_status_after_sending_command(self.latest_command)
+            self.status_controller.update_recipient_status_after_sending_command(self._latest_sent_command)
             # update if the command is integrated command
             self.update_integrated_command()
         except AdminDisconnectException:
@@ -124,4 +127,3 @@ class AdminController:
     def update_integrated_command(self):
         if self._latest_input_command_type.name in IntegrationCommandType.__members__:
             self.status_controller.current_integrated_command = self._latest_input_command_type
-
