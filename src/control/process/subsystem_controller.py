@@ -20,7 +20,6 @@ class SubsystemController:
         self.error_queue = queue.Queue()
         self.system_command_queue = queue.Queue()
         self.status_controller = status_controller
-        self.send_info_to_admin = False
         self._lock = threading.Lock()
 
         self.info_invoker = InfoInvoker()
@@ -36,6 +35,19 @@ class SubsystemController:
             if not self.system_command_queue.empty():
                 return self.system_command_queue.get()
 
+    def clear_queue(self, queue_type: str = "data"):
+        if queue_type == "data":
+            queue_type = [self.data_queue]
+        elif queue_type == "info":
+            queue_type = [self.info_queue]
+        elif queue_type == "debug":
+            queue_type = [self.debug_queue]
+        elif queue_type == "all":
+            queue_type = [self.info_queue, self.debug_queue, self.data_queue]
+        for queue_to_clear in queue_type:
+            with queue_to_clear.mutex:
+                queue_to_clear.queue.clear()
+
     def add_active_subsystem_client(self, client):
         if client.client_type in [ClientType.LEVEL, ClientType.GYRO, ClientType.MASS]:
             self.status_controller.controller_clients[client.client_type] = client
@@ -45,8 +57,6 @@ class SubsystemController:
     def execute_subsystem(self, new_client):
         threading.Thread(target=self.request_data_thread, args=(new_client,)).start()
         threading.Thread(target=self.receive_message_thread, args=(new_client,)).start()
-        if not self.send_info_to_admin:
-            threading.Thread(target=self.send_update_to_admin_from_subcontroller(), ).start()
 
     def request_data_thread(self, client: Client, interval=60):
         while client.connected:
@@ -142,15 +152,8 @@ class SubsystemController:
             self.system_command_queue.put(cmd)
             # TODO: add task to future task
 
-    def send_update_to_admin_from_subcontroller(self):
-        # TODO: change the operating sequence, must be available as soon as admin is connected
-        while self.status_controller.admin is not None and self.status_controller.get_admin_connection_state():
-            self.send_info_to_admin = True
-            data_list = [msg_queue.get() for msg_queue in
-                         [self.info_queue, self.data_queue, self.status_controller.status_queue] if
-                         not msg_queue.empty()]
-
-            for data in data_list:
-                LogMessage.send_to_user(data)
-                self.status_controller.admin.tcp_service.send_message(data)
-        self.send_info_to_admin = False
+    def get_update_from_subcontroller(self) -> list:
+        data_list = [msg_queue.get() for msg_queue in
+                     [self.info_queue, self.data_queue, self.status_controller.status_queue] if
+                     not msg_queue.empty()]
+        return data_list

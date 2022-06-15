@@ -1,5 +1,7 @@
 import queue
 import threading
+from typing import Optional, List, Dict
+
 from src.communication.client import ClientStatus, ClientType, Client
 from src.control.exceptions.process_execptions import IntendedClientIsNotConnectedException, \
     IntendedClientDoesNotExistException
@@ -20,11 +22,11 @@ class Singleton(object):
 
 class StatusController(Singleton):
     def __init__(self):
-        self._admin = None
-        self._users = []
-        self._controller_clients = {}
-        self._tasks_list = Tasks()
-        self._current_integrated_command = None
+        self._admin: Optional[Client] = None
+        self._users: List[Optional[Client]] = []
+        self._controller_clients: Dict[Optional[ClientType]] = {}
+        self._tasks_list: Tasks = Tasks()
+        self._current_integrated_command: Optional[Command] = None
         self._status_queue = queue.Queue()
         self._current_task_queue = queue.Queue()
         self._lock = threading.RLock()
@@ -63,12 +65,16 @@ class StatusController(Singleton):
     def status_queue(self):
         return self._status_queue
 
-    def get_status_from_queue(self):
+    def get_status_from_queue(self) -> List[ClientStatus]:
         with self._lock:
-            if not self.status_queue.empty():
-                return self.status_queue.get()
-            else:
-                return
+            status_list = []
+            while not self.status_queue.empty():
+                status_list.append(self.status_queue.get())
+            return status_list
+
+    def clear_status_queue(self):
+        with self.status_queue.mutex:
+            self.status_queue.queue.clear()
 
     @property
     def controller_clients(self):
@@ -87,11 +93,15 @@ class StatusController(Singleton):
     def tasks_list(self):
         return self._tasks_list
 
-    def get_subsystem_client(self, client_type: ClientType):
+    def get_subsystem_client(self, client_type: ClientType) -> Client:
         with self._lock:
             return self.controller_clients[client_type]
 
-    def get_subsystem_status(self, recipient_type):
+    def get_connected_subsystem_status(self):
+        with self._lock:
+            [self.add_status_to_queue(client_type, client.status) for client_type, client in self.controller_clients.items()]
+
+    def get_subsystem_status(self, recipient_type: ClientType) -> ClientStatus:
         with self._lock:
             if recipient_type in self.controller_clients:
                 recipient = self.get_subsystem_client(recipient_type)
@@ -102,12 +112,12 @@ class StatusController(Singleton):
             else:
                 raise IntendedClientDoesNotExistException()
 
-    def check_recipient_status_for_busy_command(self, recipient_type):
+    def check_recipient_status_for_busy_command(self, recipient_type: ClientType) -> bool:
         with self._lock:
             recipient_status = self.get_subsystem_status(recipient_type)
             return recipient_status == ClientStatus.READY
 
-    def update_recipient_status_after_sending_command(self, command: Command):
+    def update_recipient_status_after_sending_command(self, command: Command) -> [ClientStatus, ClientStatus]:
         with self._lock:
             update_status = False
             new_status = None
@@ -134,7 +144,7 @@ class StatusController(Singleton):
             status_msg = Paser.parse_status_msg_send(subsystem_type, new_status)
             self._status_queue.put(status_msg)
 
-    def get_admin_connection_state(self):
+    def get_admin_connection_state(self) -> bool:
         with self._lock:
             return self.admin.connected
 

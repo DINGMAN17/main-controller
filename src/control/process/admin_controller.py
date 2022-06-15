@@ -1,13 +1,13 @@
 import queue
 import threading
-from typing import Optional
+from typing import Optional, List
 
 from src.communication.client import Client, ClientType
 from src.control.exceptions.process_execptions import SendCommandStatusCheckFailException, AdminDisconnectException, \
     ClientDisconnectException
 
 from src.control.process.status_controller import StatusController
-from src.message.command.command import IntegrationCommandType
+from src.message.command.command import IntegrationCommandType, BaseCommandType
 from src.message.command.command_executor import Command
 from src.message.command.command_invoker import CommandInvoker
 from src.message.exceptions.command_exception import InvalidCommandTypeException
@@ -16,11 +16,11 @@ from src.utils.logging import LogMessage
 
 class AdminController:
     def __init__(self, status_controller: StatusController):
-        self.status_controller = status_controller
-        self.command_invoker = CommandInvoker()
-        self._admin_command_queue = queue.Queue()
-        self._latest_sent_command = None
-        self._latest_input_command_type = None
+        self.status_controller: StatusController = status_controller
+        self.command_invoker: CommandInvoker = CommandInvoker()
+        self._admin_command_queue: queue = queue.Queue()
+        self._latest_sent_command: Optional[Command] = None
+        self._latest_input_command_type: Optional[BaseCommandType] = None
 
     @property
     def latest_input_command_type(self):
@@ -34,13 +34,20 @@ class AdminController:
     def admin_command_queue(self):
         return self._admin_command_queue
 
+    def send_update_to_users(self, update_list: list):
+        for user in self.status_controller.users:
+            try:
+                [user.tcp_service.send_message(update) for update in update_list]
+            except OSError:
+                pass
+
     def add_admin_or_user(self, client: Client):
         if client.client_type == ClientType.ADMIN:
             # only one admin user is allowed
             self.status_controller.admin = client
         self.status_controller.add_user(client)
 
-    def get_admin_connection_state(self):
+    def get_admin_connection_state(self) -> bool:
         return self.status_controller.get_admin_connection_state()
 
     def activate(self):
@@ -58,7 +65,7 @@ class AdminController:
         valid_msg_list = self.receive_command()
         [self.process_command(msg) for msg in valid_msg_list]
 
-    def receive_command(self):
+    def receive_command(self) -> List[Optional[str]]:
         valid_msg_list = self.status_controller.admin.tcp_service.receive_message()
         LogMessage.receive_command(valid_msg_list)
         return valid_msg_list
@@ -76,7 +83,7 @@ class AdminController:
         except SendCommandStatusCheckFailException:
             pass
 
-    def add_and_verify_command_to_queue(self, commands_list):
+    def add_and_verify_command_to_queue(self, commands_list: List[Command]):
         for cmd in commands_list:
             if not self.verify_recipient_status(cmd):
                 raise SendCommandStatusCheckFailException()
@@ -101,7 +108,7 @@ class AdminController:
         recipient.tcp_service.send_message(command.value)
         LogMessage.send_command(command)
 
-    def verify_recipient_status(self, command: Command):
+    def verify_recipient_status(self, command: Command) -> bool:
         if command.busy_command:
             recipient_status_check = self.status_controller.check_recipient_status_for_busy_command(command.recipient)
             return recipient_status_check
@@ -112,7 +119,7 @@ class AdminController:
             return self.admin_command_queue.get()
         return None
 
-    def add_command_to_queue(self, command):
+    def add_command_to_queue(self, command: Command):
         self.admin_command_queue.put(command)
 
     def update_after_sending_command(self):
