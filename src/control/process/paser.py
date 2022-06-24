@@ -12,3 +12,4 @@ class Paser:
         client_type = ClientType(msg_components[0])
         client_status = ClientStatus(msg_components[-1].lower())
         return client_type, client_status
+

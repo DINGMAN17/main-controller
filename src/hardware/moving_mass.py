@@ -6,12 +6,12 @@ class MovingMass:
 
     @staticmethod
     def set_movement(x_position, y_position):
-        return "Mass_setPos_" + str(x_position) + str(y_position) + "\n"
+        return "Mass_SetPos_" + str(x_position) + str(y_position) + "\n"
 
     @staticmethod
     def move():
-        return "Mass_move\n"
+        return "Mass_Move\n"
 
     @staticmethod
     def stop():
-        return "Mass_stop\n"
+        return "Mass_Stop\n"

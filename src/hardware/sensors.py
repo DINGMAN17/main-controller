@@ -30,7 +30,7 @@ class LoadCell:
 class MovingMassPos:
     @staticmethod
     def get_position():
-        return "Mass_getPos\n"
+        return "Mass_GetPos\n"
 
 
 if __name__ == "__main__":

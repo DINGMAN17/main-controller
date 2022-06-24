@@ -8,6 +8,7 @@ from src.message.info.info import BaseInfoType, MassInfoType, LevelInfoType, Gyr
 from src.message.info.info_executor import LevelInfoExecutor, MassInfoExecutor, GyroInfoExecutor, IntegratedInfoExecutor
 
 
+# TODO: resolve unknown info
 class InfoInvoker:
     def __init__(self):
         self.level_executor = LevelInfoExecutor()

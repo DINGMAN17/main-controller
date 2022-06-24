@@ -6,7 +6,6 @@ class BaseCommandType(Enum):
 
 
 class LevelCommandType(BaseCommandType):
-    #TODO: check step & init on levelling controller
     UP_AUTO = "up_a"
     DOWN_AUTO = "down_a"
     UP_MANUAL = "up_m"
@@ -20,7 +19,7 @@ class LevelCommandType(BaseCommandType):
     INIT = "init"  # no init for 1-ton due to hardware problem
     GET = "get"
     CABLE_INIT = "cable_init"  # for testing only
-    STEP = "init"  # move winch individually, follow init command format
+    STEP = "step"  # move winch individually, follow init command format
 
 
 class MassCommandType(BaseCommandType):

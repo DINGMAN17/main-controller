@@ -4,7 +4,6 @@ from enum import Enum
 class BaseInfoType(Enum):
     pass
 
-
 class AdminInfoType(BaseInfoType):
     M_POS_DONE = "A-INFO-moving mass position set successfully\n"
     M_MOVE_DONE = "A-INFO-moving mass reached position\n"

@@ -1,3 +1,5 @@
+import string
+
 from src.control.exceptions.process_execptions import ClientDisconnectException
 
 
@@ -15,12 +17,16 @@ class TcpService:
 
     def receive_message(self):
         try:
-            message = self.socket.recv(1024).decode()
+            message = self.socket.recv(1024).decode("UTF-8")
             msg_list = message.split("\n")
-            valid_messages = [msg.strip() for msg in msg_list if len(msg.strip()) > 0]
+            filtered_messages = [self.remove_escape_char(msg).strip() for msg in msg_list]
+            valid_messages = [msg for msg in filtered_messages if len(msg) > 0]
             return valid_messages
         except OSError:
             raise ClientDisconnectException()
+
+    def remove_escape_char(self, input_str):
+        return ''.join(c for c in input_str if c in string.printable)
 
     def send_message(self, msg):
         try:

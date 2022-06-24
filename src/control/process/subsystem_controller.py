@@ -58,7 +58,7 @@ class SubsystemController:
         threading.Thread(target=self.request_data_thread, args=(new_client,)).start()
         threading.Thread(target=self.receive_message_thread, args=(new_client,)).start()
 
-    def request_data_thread(self, client: Client, interval=60):
+    def request_data_thread(self, client: Client, interval=1):
         while client.connected:
             try:
                 command = self.get_data(client.client_type)
@@ -100,7 +100,7 @@ class SubsystemController:
             message_components = message.split("-")
             msg_type = BaseMessageType(message_components[1])
             if msg_type == BaseMessageType.DATA:
-                self.data_queue.put(message)
+                self.data_queue.put(message + "\n")
             elif msg_type == BaseMessageType.INFO:
                 self.process_info(message_components)
             elif msg_type == BaseMessageType.STATUS:
@@ -154,6 +154,6 @@ class SubsystemController:
 
     def get_update_from_subcontroller(self) -> list:
         data_list = [msg_queue.get() for msg_queue in
-                     [self.info_queue, self.data_queue, self.status_controller.status_queue] if
+                     [self.info_queue, self.data_queue, self.debug_queue, self.status_controller.status_queue] if
                      not msg_queue.empty()]
         return data_list
