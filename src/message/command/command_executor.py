@@ -168,7 +168,7 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
 
 class MassCommandExecutor(BaseCommandExecutor):
-    BUSY_COMMAND_LIST = [MassCommandType.MOVE]
+    BUSY_COMMAND_LIST = [MassCommandType.MOVE, MassCommandType.SET]
 
     def __init__(self):
         super().__init__()

@@ -58,7 +58,7 @@ class SubsystemController:
         threading.Thread(target=self.request_data_thread, args=(new_client,)).start()
         threading.Thread(target=self.receive_message_thread, args=(new_client,)).start()
 
-    def request_data_thread(self, client: Client, interval=1):
+    def request_data_thread(self, client: Client, interval=60):
         while client.connected:
             try:
                 command = self.get_data(client.client_type)

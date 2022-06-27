@@ -15,6 +15,12 @@ class TcpService:
     def socket(self, socket):
         self._socket = socket
 
+    def send_message(self, msg):
+        try:
+            self._socket.sendall(msg.encode())
+        except OSError:
+            raise ClientDisconnectException()
+
     def receive_message(self):
         try:
             message = self.socket.recv(1024).decode("UTF-8")
@@ -28,8 +34,3 @@ class TcpService:
     def remove_escape_char(self, input_str):
         return ''.join(c for c in input_str if c in string.printable)
 
-    def send_message(self, msg):
-        try:
-            self._socket.sendall(msg.encode())
-        except OSError:
-            raise ClientDisconnectException()

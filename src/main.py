@@ -20,7 +20,7 @@ def setup():
 
 def run():
     setup()
-    ControlServer(socket_address=('192.168.1.6', 8080), timeout=86400).run()
+    ControlServer(socket_address=('172.23.9.252', 8080), timeout=86400).run()
 
 
 if __name__ == "__main__":

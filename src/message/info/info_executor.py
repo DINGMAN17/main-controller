@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional
+from typing import Tuple, Optional
 
 from src.communication.client import ClientStatus, ClientType
 from src.message.command.command import LevelCommandType, IntegrationCommandType
@@ -56,6 +56,8 @@ class MassInfoExecutor(BaseInfoExecutor):
     def execute(self):
         if self._info_type == MassInfoType.MOVE_DONE:
             self.move_finish()
+        elif self._info_type == MassInfoType.MOVE_IN_PROGRESS:
+            self.move_in_progress()
         elif self._info_type == MassInfoType.STOP_DONE:
             self.stop_finish()
         elif self._info_type == MassInfoType.SET_DONE:
@@ -65,12 +67,16 @@ class MassInfoExecutor(BaseInfoExecutor):
 
     def set_pos_finish(self):
         self._output_info_type = AdminInfoType.M_POS_DONE
+        self._output_status.append(update_ready_status(ClientType.MASS))
 
-    def move_finish(self) -> (str, List[Tuple[ClientType, ClientStatus]]):
+    def move_finish(self):
         self._output_info_type = AdminInfoType.M_MOVE_DONE
         self._output_status.append(update_ready_status(ClientType.MASS))
 
-    def stop_finish(self) -> (str, List[Tuple[ClientType, ClientStatus]]):
+    def move_in_progress(self):
+        self._output_info_type = AdminInfoType.M_MOVE_IN_PROGRESS
+
+    def stop_finish(self):
         self._output_info_type = AdminInfoType.M_STOP_DONE
         self._output_status.append(update_ready_status(ClientType.MASS))
 

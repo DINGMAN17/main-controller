@@ -4,10 +4,12 @@ from enum import Enum
 class BaseInfoType(Enum):
     pass
 
+
 class AdminInfoType(BaseInfoType):
     M_POS_DONE = "A-INFO-moving mass position set successfully\n"
     M_MOVE_DONE = "A-INFO-moving mass reached position\n"
     M_STOP_DONE = "A-INFO-moving mass stopped successfully\n"
+    M_MOVE_IN_PROGRESS = "A-INFO-moving mass is moving, please wait patiently\n"
 
     L_BATTERY_ENOUGH = "A-INFO-levelling inclinometer has enough battery:\n"
     L_BATTERY_LOW = "A-INFO-please charge battery, levelling inclinometer has low battery:\n"
@@ -34,6 +36,7 @@ class AdminInfoType(BaseInfoType):
 
 class MassInfoType(BaseInfoType):
     MOVE_DONE = "MOVED"
+    MOVE_IN_PROGRESS = "MOVING"
     STOP_DONE = "STOPPED"
     SET_DONE = "POSSET"
 
