@@ -15,3 +15,27 @@ class MovingMass:
     @staticmethod
     def stop():
         return "Mass_Stop\n"
+
+    @staticmethod
+    def manual_move_Xplus():
+        return "Mass_JogXPlus\n"
+
+    @staticmethod
+    def manual_move_Xminus():
+        return "Mass_JogXMinus\n"
+
+    @staticmethod
+    def manual_Move_Xstop():
+        return "Mass_JogXStop\n"
+
+    @staticmethod
+    def manual_Move_Yplus():
+        return "Mass_JogYPlus\n"
+
+    @staticmethod
+    def manual_Move_Yminus():
+        return "Mass_JogYMinus\n"
+
+    @staticmethod
+    def manual_Move_Ystop():
+        return "Mass_JogYStop\n"

@@ -47,6 +47,7 @@ class CommandInvoker:
                 self.mass_command_executor.command_value = self.msg_components[-1]
                 self.process_command(self.mass_command_executor)
             elif self._recipient_type == MessageRecipientType.GYRO:
+                self.gyro_command_executor.command_value = self.msg_components[-1]
                 self.process_command(self.gyro_command_executor)
             elif self._recipient_type == MessageRecipientType.MULTIPLE:
                 self.process_command(self.integrated_command_executor)

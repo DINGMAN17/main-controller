@@ -58,7 +58,7 @@ class SubsystemController:
         threading.Thread(target=self.request_data_thread, args=(new_client,)).start()
         threading.Thread(target=self.receive_message_thread, args=(new_client,)).start()
 
-    def request_data_thread(self, client: Client, interval=60):
+    def request_data_thread(self, client: Client, interval=1):
         while client.connected:
             try:
                 command = self.get_data(client.client_type)
@@ -104,6 +104,7 @@ class SubsystemController:
             elif msg_type == BaseMessageType.INFO:
                 self.process_info(message_components)
             elif msg_type == BaseMessageType.STATUS:
+                print(message)
                 client_type, client_status = Paser.parse_status_msg_recv(message)
                 self.update_status(client_type, client_status)
             elif msg_type == BaseMessageType.DEBUG:

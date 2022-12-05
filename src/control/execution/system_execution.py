@@ -62,6 +62,7 @@ class SystemExecution:
             self.admin_controller.activate()
             threading.Thread(target=self.send_update_from_subcontroller_to_admin).start()
         elif new_client.client_type != ClientType.USER:
+            # if client belongs to sub systems
             self.subsystem_controller.execute_subsystem(new_client)
 
     def send_update_from_subcontroller_to_admin(self):
@@ -70,9 +71,8 @@ class SystemExecution:
         while self.status_controller.get_admin_connection_state():
             update_list = self.subsystem_controller.get_update_from_subcontroller()
             status_list = self.status_controller.get_status_from_queue()
-            self.admin_controller.send_update_to_users(status_list+update_list)
+            self.admin_controller.send_update_to_users(status_list + update_list)
 
     def clear_old_updates_from_subcontrollers(self):
         self.status_controller.clear_status_queue()
         self.subsystem_controller.clear_queue(queue_type="data")
-

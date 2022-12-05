@@ -15,7 +15,8 @@ sock.send("L-STATUS-ready\n".encode())
 def receive():
     while True:
         command = sock.recv(1024).decode().strip()
-        print(command)
+        if "sensor" not in command:
+            print(command)
         if "Lbat" in command:
             sock.sendall("L-INFO-Bat-7\n".encode())
         elif "Lcmd01t" in command:
@@ -24,7 +25,7 @@ def receive():
         elif "Lcmd01K" in command:
             print("keep level running")
         elif "Lcmd01L" in command:
-            time.sleep(5)
+            time.sleep(2)
             sock.sendall("L-INFO-LevellingFinish\n".encode())
         elif "Lcmd06A" in command:
             print("sent auto finished")

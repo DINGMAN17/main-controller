@@ -168,6 +168,7 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
 
 class MassCommandExecutor(BaseCommandExecutor):
+    #TODO: add busy command finish messages
     BUSY_COMMAND_LIST = [MassCommandType.MOVE, MassCommandType.SET]
 
     def __init__(self):
@@ -194,11 +195,23 @@ class MassCommandExecutor(BaseCommandExecutor):
         if self.command_type == MassCommandType.SET:
             output = MassCommandExecutor.set_position(self.command_value)
         elif self.command_type == MassCommandType.MOVE:
-            output = MassCommandExecutor.move()
+            output = MassCommandExecutor.auto_move()
         elif self.command_type == MassCommandType.STOP:
             output = MassCommandExecutor.stop()
         elif self.command_type == MassCommandType.GET:
             output = MassCommandExecutor.get_position()
+        elif self.command_type == MassCommandType.MOVE_AUTO_X_PLUS:
+            output = MassCommandExecutor.manual_move_X_positive()
+        elif self.command_type == MassCommandType.MOVE_AUTO_X_MINUS:
+            output = MassCommandExecutor.manual_move_X_negative()
+        elif self.command_type == MassCommandType.MOVE_AUTO_Y_PLUS:
+            output = MassCommandExecutor.manual_Move_Y_positive()
+        elif self.command_type == MassCommandType.MOVE_AUTO_Y_MINUS:
+            output = MassCommandExecutor.manual_Move_Y_negative()
+        elif self.command_type == MassCommandType.MOVE_AUTO_X_STOP:
+            output = MassCommandExecutor.manual_Move_X_stop()
+        elif self.command_type == MassCommandType.MOVE_AUTO_Y_STOP:
+            output = MassCommandExecutor.manual_Move_Y_stop()
         return output
 
     @staticmethod
@@ -208,7 +221,7 @@ class MassCommandExecutor(BaseCommandExecutor):
         return MovingMass.set_movement(position[0], position[1])
 
     @staticmethod
-    def move():
+    def auto_move():
         return MovingMass.move()
 
     @staticmethod
@@ -219,6 +232,30 @@ class MassCommandExecutor(BaseCommandExecutor):
     def get_position():
         return MovingMassPos.get_position()
 
+    @staticmethod
+    def manual_move_X_positive():
+        return "Mass_JogXPlus\n"
+
+    @staticmethod
+    def manual_move_X_negative():
+        return "Mass_JogXMinus\n"
+
+    @staticmethod
+    def manual_Move_X_stop():
+        return "Mass_JogXStop\n"
+
+    @staticmethod
+    def manual_Move_Y_positive():
+        return "Mass_JogYPlus\n"
+
+    @staticmethod
+    def manual_Move_Y_negative():
+        return "Mass_JogYMinus\n"
+
+    @staticmethod
+    def manual_Move_Y_stop():
+        return "Mass_JogYStop\n"
+
 
 class GyroCommandExecutor(BaseCommandExecutor):
 
@@ -226,6 +263,15 @@ class GyroCommandExecutor(BaseCommandExecutor):
 
     def __init__(self):
         super().__init__()
+        self._command_value: Optional[str] = None
+
+    @property
+    def command_value(self):
+        return self._command_value
+
+    @command_value.setter
+    def command_value(self, value: str):
+        self._command_value = value
 
     def create_command(self, output):
         busy_command = True if self.command_type in GyroCommandExecutor.busy_command_list else False
@@ -244,6 +290,10 @@ class GyroCommandExecutor(BaseCommandExecutor):
             output = GyroCommandExecutor.on_auto()
         elif self.command_type == GyroCommandType.AUTO_OFF:
             output = GyroCommandExecutor.off_auto()
+        elif self.command_type == GyroCommandType.MOVE_CUSTOM_ANGLE:
+            output = GyroCommandExecutor.move_custom_angle(self.command_value)
+        elif self.command_type == GyroCommandType.STOP_MOVE_CUSTOM_ANGLE:
+            output = GyroCommandExecutor.stop_custom_angle()
         elif self.command_type == GyroCommandType.ZERO:
             output = GyroCommandExecutor.set_zero()
         elif self.command_type == GyroCommandType.GET:
@@ -265,6 +315,14 @@ class GyroCommandExecutor(BaseCommandExecutor):
     @staticmethod
     def off_auto():
         return Gyroscope.off_auto()
+
+    @staticmethod
+    def move_custom_angle(angle):
+        return Gyroscope.move_angle(angle)
+
+    @staticmethod
+    def stop_custom_angle():
+        return Gyroscope.move_angle_stop()
 
     @staticmethod
     def get_data():

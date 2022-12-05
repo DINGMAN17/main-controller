@@ -1,7 +1,7 @@
 from src.control.execution.system_execution import SystemExecution
 
 
-class ClientHandler:
+class ClientsHandler:
 
     def __init__(self):
         self.execution = SystemExecution()

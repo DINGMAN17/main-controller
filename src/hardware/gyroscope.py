@@ -13,6 +13,14 @@ class Gyroscope:
         return "Gyro_AutoOff\n"
 
     @staticmethod
+    def move_angle(angle):
+        return "Gyro_MoveDeltaAngleOn" + angle + "\n"
+
+    @staticmethod
+    def move_angle_stop():
+        return "Gyro_MoveDeltaAngleOff\n"
+
+    @staticmethod
     def center():
         return "Gyro_Center\n"
 
