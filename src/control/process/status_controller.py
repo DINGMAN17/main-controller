@@ -95,11 +95,15 @@ class StatusController(Singleton):
 
     def get_subsystem_client(self, client_type: ClientType) -> Client:
         with self._lock:
-            return self.controller_clients[client_type]
+            try:
+                return self.controller_clients[client_type]
+            except KeyError:
+                raise IntendedClientDoesNotExistException()
 
     def get_connected_subsystem_status(self):
         with self._lock:
-            [self.add_status_to_queue(client_type, client.status) for client_type, client in self.controller_clients.items()]
+            [self.add_status_to_queue(client_type, client.status) for client_type, client in
+             self.controller_clients.items()]
 
     def get_subsystem_status(self, recipient_type: ClientType) -> ClientStatus:
         with self._lock:

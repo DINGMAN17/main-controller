@@ -4,7 +4,7 @@ from typing import Optional, List
 
 from src.communication.client import Client, ClientType
 from src.control.exceptions.process_execptions import SendCommandStatusCheckFailException, AdminDisconnectException, \
-    ClientDisconnectException
+    ClientDisconnectException, IntendedClientDoesNotExistException
 
 from src.control.process.status_controller import StatusController
 from src.message.command.command import IntegrationCommandType, BaseCommandType
@@ -59,7 +59,9 @@ class AdminController:
             try:
                 self.receive_and_process_command()
             except ClientDisconnectException:
-                print('subsystem diconnected')
+                print('admin diconnected')
+                self.stop_systems_when_admin_disconnects()
+                break
 
     def receive_and_process_command(self):
         valid_msg_list = self.receive_command()
@@ -95,14 +97,19 @@ class AdminController:
                 self.send_command_and_update()
             except ClientDisconnectException:
                 print("AdminDisconnectException")
+                self.stop_systems_when_admin_disconnects()
+                break
 
     def send_command_and_update(self):
         command = self.get_command_from_queue()
         if command is not None:
-            recipient = self.status_controller.get_subsystem_client(command.recipient)
-            self.send_command(recipient, command)
-            self._latest_sent_command = command
-            self.update_after_sending_command()
+            try:
+                recipient = self.status_controller.get_subsystem_client(command.recipient)
+                self.send_command(recipient, command)
+                self._latest_sent_command = command
+                self.update_after_sending_command()
+            except IntendedClientDoesNotExistException:
+                pass
 
     def send_command(self, recipient, command):
         recipient.tcp_service.send_message(command.value)
@@ -130,7 +137,13 @@ class AdminController:
             self.update_integrated_command()
         except AdminDisconnectException:
             print("AdminDisconnectException")
+            self.stop_systems_when_admin_disconnects()
 
     def update_integrated_command(self):
         if self._latest_input_command_type.name in IntegrationCommandType.__members__:
             self.status_controller.current_integrated_command = self._latest_input_command_type
+
+    def stop_systems_when_admin_disconnects(self):
+        command_list = CommandInvoker.get_stop_commands()
+        self.admin_command_queue.queue.clear()
+        [self.add_command_to_queue(cmd) for cmd in command_list]

@@ -67,6 +67,10 @@ class LevellingCommandExecutor(BaseCommandExecutor):
     def command_value(self, value: str):
         self._command_value = value
 
+    @staticmethod
+    def get_stop_command():
+        return Command(LevelCommandType.STOP, ClientType.LEVEL, LevellingCommandExecutor.stop(), False, True)
+
     def create_command(self, output_msg):
         busy_command = True if self.command_type in LevellingCommandExecutor.BUSY_COMMAND_LIST else False
         lock_system = True if self.command_type == LevelCommandType.STOP else False
@@ -169,7 +173,7 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
 class MassCommandExecutor(BaseCommandExecutor):
     #TODO: add busy command finish messages
-    BUSY_COMMAND_LIST = [MassCommandType.MOVE, MassCommandType.SET]
+    BUSY_COMMAND_LIST = [MassCommandType.SET]
 
     def __init__(self):
         super().__init__()
@@ -182,6 +186,10 @@ class MassCommandExecutor(BaseCommandExecutor):
     @command_value.setter
     def command_value(self, value: str):
         self._command_value = value
+
+    @staticmethod
+    def get_stop_command():
+        return Command(MassCommandType.STOP, ClientType.MASS, MassCommandExecutor.stop(), False, True)
 
     def create_command(self, output_msg):
         busy_command = True if self.command_type in MassCommandExecutor.BUSY_COMMAND_LIST else False
@@ -273,6 +281,10 @@ class GyroCommandExecutor(BaseCommandExecutor):
     def command_value(self, value: str):
         self._command_value = value
 
+    @staticmethod
+    def get_stop_command():
+        return Command(GyroCommandType.STOP, ClientType.GYRO, GyroCommandExecutor.stop(), False, True)
+
     def create_command(self, output):
         busy_command = True if self.command_type in GyroCommandExecutor.busy_command_list else False
         lock_system = True if self.command_type == GyroCommandType.STOP else False
@@ -359,11 +371,10 @@ class IntegrationCommandExecutor(BaseCommandExecutor):
 
     @staticmethod
     def E_stop() -> List[Command]:
-        pass
-        # mass_cmd = MassCommandExecutor.execute(MassCommandType.STOP)
-        # level_cmd = LevellingCommandExecutor.execute(LevelCommandType.STOP)
-        # gyro_cmd = GyroCommandExecutor.execute(GyroCommandType.STOP)
-        # return [mass_cmd, level_cmd, gyro_cmd]
+        mass_cmd = MassCommandExecutor.get_stop_command()
+        level_cmd = LevellingCommandExecutor.get_stop_command()
+        gyro_cmd = GyroCommandExecutor.get_stop_command()
+        return [mass_cmd, level_cmd, gyro_cmd]
 
     @staticmethod
     def system_check():

@@ -6,7 +6,7 @@ import numpy as np
 
 class Initialisation:
     """
-    calculate the steps for each motor to initiate initial levelling
+    calculate the steps for each motor to initiate initial levellingAutoMove
     """
 
     def __init__(self, ppvc_type, pulley_num, data_filename=None):

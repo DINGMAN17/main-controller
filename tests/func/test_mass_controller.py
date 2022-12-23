@@ -19,12 +19,14 @@ def receive():
         if "Mass_move" in command:
             time.sleep(5)
             sock.sendall("M-INFO-MOVED\n".encode())
+            print("send moved msg")
         elif "Mass_stop" in command:
-            time.sleep(3)
+            time.sleep(2)
             sock.sendall("M-INFO-STOPPED\n".encode())
-        # elif "Mass_getPos" in command:
-        #     pos_data = generate_mass_data()
-        #     sock.send(pos_data.encode())
+        elif "Mass_getPos" in command:
+            pos_data = generate_mass_data()
+            sock.send(pos_data.encode())
+            print("send data ", pos_data)
 
 
 def generate_mass_data():

@@ -26,7 +26,7 @@ def setup_logger():
 
 def run():
     setup()
-    ControlServer(socket_address=('192.168.1.6', 8080), timeout=86400).run()
+    ControlServer(socket_address=('127.0.0.1', 8080), timeout=86400).run()
 
 
 if __name__ == "__main__":

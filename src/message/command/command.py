@@ -31,7 +31,7 @@ class MassCommandType(BaseCommandType):
     MOVE_AUTO_Y_MINUS = "move_y_minus"
     MOVE_AUTO_Y_STOP = "move_y_stop"
 
-    SET = "set"
+    SET = "set" #Y0
     MOVE = "move"
     STOP = "stop"
     INIT = "init"

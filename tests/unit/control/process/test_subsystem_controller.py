@@ -35,8 +35,8 @@ class TestSubsystemController:
             ("L-INFO-Stopped", (AdminInfoType.L_STOP_DONE.value, "L-STATUS-ready")),
             ("L-INFO-AutoMoveFinish", (AdminInfoType.L_MOVE_DONE.value, "L-STATUS-ready")),
             ("L-INFO-InitFinish", (AdminInfoType.L_INIT_DONE.value, "L-STATUS-ready")),
-            ("L-INFO-Bat-5", ("A-INFO-levelling inclinometer has enough battery:5\n", None)),
-            ("L-INFO-Bat-3", ("A-INFO-please charge battery, levelling inclinometer has low battery:3\n", None)),
+            ("L-INFO-Bat-5", ("A-INFO-levellingAutoMove inclinometer has enough battery:5\n", None)),
+            ("L-INFO-Bat-3", ("A-INFO-please charge battery, levellingAutoMove inclinometer has low battery:3\n", None)),
         ],
     )
     def test_process_subsystem_message_single_info(self, input_info_msg, expect_results):

@@ -31,10 +31,10 @@ def receive():
             print("sent auto finished")
             time.sleep(3)
             sock.sendall("L-INFO-AutoMoveFinish\n".encode())
-        # elif "Lsensor" in command:
-        #     angle_data, load_data = generate_level_data()
-        #     sock.send(angle_data.encode())
-        #     sock.send(load_data.encode())
+        elif "Lsensor" in command:
+            angle_data, load_data = generate_level_data()
+            sock.send(angle_data.encode())
+            sock.send(load_data.encode())
 
 
 def generate_level_data():

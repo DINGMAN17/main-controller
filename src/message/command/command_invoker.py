@@ -36,8 +36,12 @@ class CommandInvoker:
     def integrated_command_type(self, integrated_command: Command):
         self._integrated_command_type = integrated_command
 
+    @staticmethod
+    def get_stop_commands():
+        return IntegrationCommandExecutor.E_stop()
+
     def invoke(self):
-        # sample message: A-C-L-init, C:command; L:levelling
+        # sample message: A-C-L-init, C:command; L:levellingAutoMove
         try:
             self._recipient_type = MessageRecipientType(self.msg_components[2])
             if self._recipient_type == MessageRecipientType.LEVEL:
@@ -54,7 +58,6 @@ class CommandInvoker:
         except (ValueError, IndexError) as e:
             # LogMessage.wrong_command(self.msg_components)
             raise InvalidCommandTypeException
-            pass
 
     def process_command(self, executor: BaseCommandExecutor):
         self.get_command_type()
