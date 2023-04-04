@@ -22,7 +22,10 @@ class Command:
 class BaseCommandExecutor:
     def __init__(self):
         self._command_type: Optional[BaseCommandType] = None
+        self._client_type: Optional[ClientType] = None
         self._command_to_send: Optional[List[Command]] = None
+        self._busy_commands_list: Optional[List[Command]] = None
+        self._lock_commands_list: Optional[List[Command]] = None
 
     @property
     def command_type(self):
@@ -33,12 +36,36 @@ class BaseCommandExecutor:
         self._command_type = command_type
 
     @property
+    def client_type(self):
+        return self._client_type
+
+    @client_type.setter
+    def client_type(self, client_type):
+        self._client_type = client_type
+
+    @property
     def command_to_send(self):
         return self._command_to_send
 
     @command_to_send.setter
     def command_to_send(self, command_to_send):
         self._command_to_send = command_to_send
+
+    @property
+    def busy_commands_list(self):
+        return self._busy_commands_list
+
+    @busy_commands_list.setter
+    def busy_commands_list(self, busy_command_list):
+        self._busy_commands_list = busy_command_list
+
+    @property
+    def lock_commands_list(self):
+        return self._lock_commands_list
+
+    @lock_commands_list.setter
+    def lock_commands_list(self, lock_command_list):
+        self._lock_commands_list = lock_command_list
 
     def execute(self):
         output_msg = self.get_output_message()
@@ -48,16 +75,22 @@ class BaseCommandExecutor:
         pass
 
     def create_command(self, output_msg):
-        pass
+        busy_command = self.command_type in self.busy_commands_list
+        lock_system = self.command_type in self.lock_commands_list
+        if output_msg is not None:
+            self.command_to_send = [Command(self.command_type, self.client_type, output_msg, busy_command, lock_system)]
 
 
 class LevellingCommandExecutor(BaseCommandExecutor):
-    BUSY_COMMAND_LIST = [LevelCommandType.LEVEL_AUTO, LevelCommandType.LEVEL_ONCE, LevelCommandType.CABLE_INIT,
-                         LevelCommandType.UP_AUTO, LevelCommandType.DOWN_AUTO]
 
     def __init__(self):
         super().__init__()
         self._command_value: Optional[str] = None
+        self.client_type = ClientType.LEVEL
+        self.lock_commands_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.STOP]
+        self.busy_commands_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.LEVEL_ONCE,
+                                   LevelCommandType.CABLE_INIT,
+                                   LevelCommandType.UP_AUTO, LevelCommandType.DOWN_AUTO]
 
     @property
     def command_value(self):
@@ -70,13 +103,6 @@ class LevellingCommandExecutor(BaseCommandExecutor):
     @staticmethod
     def get_stop_command():
         return Command(LevelCommandType.STOP, ClientType.LEVEL, LevellingCommandExecutor.stop(), False, True)
-
-    def create_command(self, output_msg):
-        busy_command = True if self.command_type in LevellingCommandExecutor.BUSY_COMMAND_LIST else False
-        lock_system = True if self.command_type == LevelCommandType.STOP else False
-        if output_msg is not None:
-            recipient = ClientType.LEVEL
-            self.command_to_send = [Command(self.command_type, recipient, output_msg, busy_command, lock_system)]
 
     def get_output_message(self):
         output_msg = None
@@ -172,12 +198,14 @@ class LevellingCommandExecutor(BaseCommandExecutor):
 
 
 class MassCommandExecutor(BaseCommandExecutor):
-    #TODO: add busy command finish messages
-    BUSY_COMMAND_LIST = [MassCommandType.SET]
+    # TODO: add busy command finish messages
 
     def __init__(self):
         super().__init__()
         self._command_value: Optional[str] = None
+        self.client_type = ClientType.MASS
+        self.busy_commands_list = [MassCommandType.SET]
+        self.lock_commands_list = [MassCommandType.STOP]
 
     @property
     def command_value(self):
@@ -190,13 +218,6 @@ class MassCommandExecutor(BaseCommandExecutor):
     @staticmethod
     def get_stop_command():
         return Command(MassCommandType.STOP, ClientType.MASS, MassCommandExecutor.stop(), False, True)
-
-    def create_command(self, output_msg):
-        busy_command = True if self.command_type in MassCommandExecutor.BUSY_COMMAND_LIST else False
-        lock_system = True if self.command_type == MassCommandType.STOP else False
-        if output_msg is not None:
-            recipient = ClientType.MASS
-            self.command_to_send = [Command(self.command_type, recipient, output_msg, busy_command, lock_system)]
 
     def get_output_message(self):
         output = None
@@ -267,11 +288,12 @@ class MassCommandExecutor(BaseCommandExecutor):
 
 class GyroCommandExecutor(BaseCommandExecutor):
 
-    busy_command_list = [GyroCommandType.ZERO, GyroCommandType.AUTO_ON, GyroCommandType.AUTO_OFF]
-
     def __init__(self):
         super().__init__()
         self._command_value: Optional[str] = None
+        self.client_type = ClientType.GYRO
+        self.busy_commands_list = [GyroCommandType.ZERO, GyroCommandType.MOVE_CUSTOM_ANGLE]
+        self.lock_commands_list = [GyroCommandType.AUTO_ON, GyroCommandType.AUTO_OFF, GyroCommandType.STOP]
 
     @property
     def command_value(self):
@@ -284,13 +306,6 @@ class GyroCommandExecutor(BaseCommandExecutor):
     @staticmethod
     def get_stop_command():
         return Command(GyroCommandType.STOP, ClientType.GYRO, GyroCommandExecutor.stop(), False, True)
-
-    def create_command(self, output):
-        busy_command = True if self.command_type in GyroCommandExecutor.busy_command_list else False
-        lock_system = True if self.command_type == GyroCommandType.STOP else False
-        if output is not None:
-            recipient = ClientType.GYRO
-            self.command_to_send = [Command(self.command_type, recipient, output, busy_command, lock_system)]
 
     def get_output_message(self):
         output = None

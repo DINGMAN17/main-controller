@@ -3,10 +3,12 @@ import threading
 import time
 
 from src.communication.client import ClientType, Client
-from src.control.exceptions.process_execptions import NotValidSubsystemException, ClientDisconnectException
+from src.control.exceptions.network_exceptions import ClientDisconnectException
+from src.control.exceptions.process_execptions import NotValidSubsystemException
 from src.control.process.paser import Paser
 from src.control.process.status_controller import StatusController
 from src.message.command.command_executor import MassCommandExecutor, GyroCommandExecutor, LevellingCommandExecutor
+from src.message.error.error import NetworkErrorType
 from src.message.info.info_invoker import InfoInvoker
 from src.message.message import BaseMessageType
 from src.utils.logging import LogMessage
@@ -58,14 +60,14 @@ class SubsystemController:
         threading.Thread(target=self.request_data_thread, args=(new_client,)).start()
         threading.Thread(target=self.receive_message_thread, args=(new_client,)).start()
 
-    def request_data_thread(self, client: Client, interval=2):
+    def request_data_thread(self, client: Client, interval=20):
         while client.connected:
             try:
                 command = self.get_data(client.client_type)
                 client.tcp_service.send_message(command)
                 time.sleep(interval)
             except ClientDisconnectException:
-                print('subsystem disconnected')
+                self.handle_subsystem_disconnect(client.client_type)
                 break
 
     def get_data(self, client_type):
@@ -158,3 +160,16 @@ class SubsystemController:
                      [self.info_queue, self.data_queue, self.debug_queue, self.status_controller.status_queue] if
                      not msg_queue.empty()]
         return data_list
+
+    def handle_subsystem_disconnect(self, client_type: ClientType):
+        self.status_controller.system_error = self.get_error_type(client_type)
+
+    def get_error_type(self, client_type):
+        error_type = None
+        if client_type == ClientType.GYRO:
+            error_type = NetworkErrorType.GYRO_DISCONNECT
+        elif client_type == ClientType.MASS:
+            error_type = NetworkErrorType.MASS_DISCONNECT
+        elif client_type == ClientType.LEVEL:
+            error_type = NetworkErrorType.LEVEL_DISCONNECT
+        return error_type

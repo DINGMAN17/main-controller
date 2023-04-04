@@ -64,6 +64,7 @@ class Winches:
 
     @staticmethod
     def distance2steps(distance):
+        # distance unit: mm
         pulley_num = 6
         steps = int(360 * distance * pulley_num / (2 * math.pi * 70))
         return str(steps).zfill(4)

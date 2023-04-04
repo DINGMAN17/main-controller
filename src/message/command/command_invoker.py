@@ -37,7 +37,7 @@ class CommandInvoker:
         self._integrated_command_type = integrated_command
 
     @staticmethod
-    def get_stop_commands():
+    def activate_Estop():
         return IntegrationCommandExecutor.E_stop()
 
     def invoke(self):

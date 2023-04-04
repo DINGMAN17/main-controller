@@ -3,18 +3,21 @@ import threading
 from typing import Optional, List
 
 from src.communication.client import Client, ClientType
-from src.control.exceptions.process_execptions import SendCommandStatusCheckFailException, AdminDisconnectException, \
-    ClientDisconnectException, IntendedClientDoesNotExistException
+from src.control.exceptions.network_exceptions import ClientDisconnectException
+from src.control.exceptions.process_execptions import SendCommandStatusCheckFailException, \
+    IntendedClientDoesNotExistException
 
 from src.control.process.status_controller import StatusController
 from src.message.command.command import IntegrationCommandType, BaseCommandType
 from src.message.command.command_executor import Command
 from src.message.command.command_invoker import CommandInvoker
+from src.message.error.error import NetworkErrorType
 from src.message.exceptions.command_exception import InvalidCommandTypeException
 from src.utils.logging import LogMessage
 
 
 class AdminController:
+    #TODO: handle admin when admin disconnect and reconnect
     def __init__(self, status_controller: StatusController):
         self.status_controller: StatusController = status_controller
         self.command_invoker: CommandInvoker = CommandInvoker()
@@ -38,7 +41,7 @@ class AdminController:
         for user in self.status_controller.users:
             try:
                 [user.tcp_service.send_message(update) for update in update_list]
-            except OSError:
+            except ClientDisconnectException:
                 pass
 
     def add_admin_or_user(self, client: Client):
@@ -60,7 +63,7 @@ class AdminController:
                 self.receive_and_process_command()
             except ClientDisconnectException:
                 print('admin diconnected')
-                self.stop_systems_when_admin_disconnects()
+                self.handle_admin_disconnect()
                 break
 
     def receive_and_process_command(self):
@@ -97,7 +100,7 @@ class AdminController:
                 self.send_command_and_update()
             except ClientDisconnectException:
                 print("AdminDisconnectException")
-                self.stop_systems_when_admin_disconnects()
+                self.handle_admin_disconnect()
                 break
 
     def send_command_and_update(self):
@@ -112,8 +115,11 @@ class AdminController:
                 pass
 
     def send_command(self, recipient, command):
-        recipient.tcp_service.send_message(command.value)
-        LogMessage.send_command(command)
+        try:
+            recipient.tcp_service.send_message(command.value)
+            LogMessage.send_command(command)
+        except ClientDisconnectException:
+            print(recipient.name, " is not connected")
 
     def verify_recipient_status(self, command: Command) -> bool:
         if command.busy_command:
@@ -135,15 +141,21 @@ class AdminController:
             self.status_controller.update_recipient_status_after_sending_command(self._latest_sent_command)
             # update if the command is integrated command
             self.update_integrated_command()
-        except AdminDisconnectException:
+        except ClientDisconnectException:
             print("AdminDisconnectException")
-            self.stop_systems_when_admin_disconnects()
+            self.handle_admin_disconnect()
 
     def update_integrated_command(self):
         if self._latest_input_command_type.name in IntegrationCommandType.__members__:
             self.status_controller.current_integrated_command = self._latest_input_command_type
 
-    def stop_systems_when_admin_disconnects(self):
-        command_list = CommandInvoker.get_stop_commands()
+    def handle_admin_disconnect(self):
+        self.status_controller.system_error = NetworkErrorType.ADMIN_DISCONNECT
+        self.restore_safe_mode()
+
+    def restore_safe_mode(self):
+        stop_command_list = CommandInvoker.activate_Estop()
         self.admin_command_queue.queue.clear()
-        [self.add_command_to_queue(cmd) for cmd in command_list]
+        [self.add_command_to_queue(cmd) for cmd in stop_command_list if
+         self.status_controller.check_recipient_status_for_safe_mode(cmd.recipient)]
+

@@ -8,6 +8,7 @@ from src.control.exceptions.process_execptions import IntendedClientIsNotConnect
 from src.control.process.paser import Paser
 from src.control.task_list import Tasks
 from src.message.command.command_executor import Command
+from src.message.error.error import ErrorType
 from src.utils.logging import LogMessage
 
 
@@ -27,6 +28,7 @@ class StatusController(Singleton):
         self._controller_clients: Dict[Optional[ClientType]] = {}
         self._tasks_list: Tasks = Tasks()
         self._current_integrated_command: Optional[Command] = None
+        self._system_error: Optional[ErrorType] = None
         self._status_queue = queue.Queue()
         self._current_task_queue = queue.Queue()
         self._lock = threading.RLock()
@@ -36,9 +38,19 @@ class StatusController(Singleton):
         return self._current_integrated_command
 
     @current_integrated_command.setter
-    def current_integrated_command(self, integrated_command):
+    def current_integrated_command(self, integrated_command: Command):
         with self._lock:
             self._current_integrated_command = integrated_command
+
+    @property
+    def system_error(self):
+        return self._system_error
+
+    @system_error.setter
+    def system_error(self, new_system_error: ErrorType):
+        with self._lock:
+            print("setting system error to ", new_system_error.name)
+            self._system_error = new_system_error
 
     @property
     def admin(self):
@@ -120,6 +132,14 @@ class StatusController(Singleton):
         with self._lock:
             recipient_status = self.get_subsystem_status(recipient_type)
             return recipient_status == ClientStatus.READY
+
+    def check_recipient_status_for_safe_mode(self, recipient_type: ClientType):
+        with self._lock:
+            if recipient_type in self.controller_clients.keys():
+                recipient_status = self.get_subsystem_status(recipient_type)
+                return recipient_status != ClientStatus.LOCK
+            else:
+                return True
 
     def update_recipient_status_after_sending_command(self, command: Command) -> [ClientStatus, ClientStatus]:
         with self._lock:

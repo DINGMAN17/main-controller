@@ -14,17 +14,5 @@ class NotValidSubsystemException(Exception):
     pass
 
 
-class SubsystemDisconnectException(Exception):
-    pass
-
-
-class ClientDisconnectException(Exception):
-    pass
-
-
-class AdminDisconnectException(ClientDisconnectException):
-    pass
-
-
-class SendCommandStatusCheckFailException(ClientDisconnectException):
+class SendCommandStatusCheckFailException(Exception):
     pass
