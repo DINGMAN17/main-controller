@@ -3,7 +3,7 @@ import pytest
 from src.communication.client import Client, ClientType, ClientStatus
 from src.control.exceptions.process_execptions import SendCommandStatusCheckFailException
 from src.control.process.admin_controller import AdminController
-from src.control.process.status_controller import StatusController
+from src.control.process.system_controller import SystemController
 from src.message.command.command import LevelCommandType, MassCommandType, GyroCommandType
 from src.message.command.command_executor import Command
 
@@ -17,7 +17,7 @@ from src.message.command.command_executor import Command
                            Client(ClientType.ADMIN, "admin_1", None)]])
 def test_add_admin_or_user_one_admin(input_users):
     # test cases: 1 user, 1 admin, multiple users, multiple admins, multiple users & 1 admin
-    status_controller = StatusController()
+    status_controller = SystemController()
     admin_controller = AdminController(status_controller)
     admin = None
     for user in input_users:
@@ -88,8 +88,8 @@ class TestAdminControllerSuccess:
             recipient_type, expect_recipient_status = expect_client_status
             self.admin_controller.send_command_and_update()
             assert self.admin_controller \
-                       .status_controller.get_subsystem_status(recipient_type) == expect_recipient_status
-            assert self.admin_controller.status_controller.current_integrated_command is None
+                       .system_controller.get_subsystem_status(recipient_type) == expect_recipient_status
+            assert self.admin_controller.system_controller.current_integrated_command is None
 
 
 @pytest.mark.usefixtures("admin_controller_setup_busy_client")
@@ -105,4 +105,4 @@ class TestAdminControllerFail:
     )
     def test_add_and_verify_command_to_queue_exception(self, command_list):
         with pytest.raises(SendCommandStatusCheckFailException):
-            self.admin_controller.add_and_verify_command_to_queue(command_list)
+            self.admin_controller.add_command_to_queue(command_list)

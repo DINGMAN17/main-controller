@@ -1,12 +1,13 @@
 import queue
 import threading
 import time
+from typing import Dict, Optional
 
 from src.communication.client import ClientType, Client
-from src.control.exceptions.network_exceptions import ClientDisconnectException
+from src.control.exceptions.operation_exceptions import ClientDisconnectException
 from src.control.exceptions.process_execptions import NotValidSubsystemException
 from src.control.process.paser import Paser
-from src.control.process.status_controller import StatusController
+from src.control.process.system_controller import SystemController
 from src.message.command.command_executor import MassCommandExecutor, GyroCommandExecutor, LevellingCommandExecutor
 from src.message.error.error import NetworkErrorType
 from src.message.info.info_invoker import InfoInvoker
@@ -15,22 +16,19 @@ from src.utils.logging import LogMessage
 
 
 class SubsystemController:
-    def __init__(self, status_controller: StatusController):
+    def __init__(self, controller_clients: Dict[Optional[ClientType]]):
         self.data_queue = queue.Queue()
         self.debug_queue = queue.Queue()
         self.info_queue = queue.Queue()
         self.error_queue = queue.Queue()
         self.system_command_queue = queue.Queue()
-        self.status_controller = status_controller
+        self.controller_clients = controller_clients
         self._lock = threading.Lock()
 
         self.info_invoker = InfoInvoker()
 
     def get_latest_info_update(self):
         return self.info_queue.get()
-
-    def get_latest_status_update(self):
-        return self.status_controller.get_status_from_queue()
 
     def get_latest_system_command(self):
         with self._lock:
@@ -50,9 +48,9 @@ class SubsystemController:
             with queue_to_clear.mutex:
                 queue_to_clear.queue.clear()
 
-    def add_active_subsystem_client(self, client):
+    def add_active_subsystem_client(self, client: Client):
         if client.client_type in [ClientType.LEVEL, ClientType.GYRO, ClientType.MASS]:
-            self.status_controller.controller_clients[client.client_type] = client
+            self.controller_clients[client.client_type] = client
         else:
             raise NotValidSubsystemException()
 
@@ -81,7 +79,7 @@ class SubsystemController:
         return command
 
     def send_system_command(self, system_cmd):
-        recipient = self.status_controller.get_subsystem_client(system_cmd.recipient)
+        recipient = self.controller_clients[system_cmd.recipient]
         recipient.tcp_service.send_message(system_cmd.value)
         LogMessage.send_command(system_cmd)
 

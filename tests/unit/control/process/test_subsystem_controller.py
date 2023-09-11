@@ -58,7 +58,7 @@ class TestSubsystemController:
         ]
     )
     def test_process_subsystem_message_integrated_info(self, input_info_msg, expect_results):
-        self.subsystem_controller.status_controller.current_integrated_command = IntegrationCommandType.MOVE_LEVEL
+        self.subsystem_controller.system_controller.current_integrated_command = IntegrationCommandType.MOVE_LEVEL
         self.subsystem_controller.update_incoming_integrated_command()
         self.subsystem_controller.process_info(input_info_msg.split("-"))
         output_info_msg = self.subsystem_controller.get_latest_info_update()

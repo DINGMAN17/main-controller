@@ -1,6 +1,6 @@
 import string
 
-from src.control.exceptions.network_exceptions import ClientDisconnectException
+from src.control.exceptions.operation_exceptions import ClientDisconnectException
 
 
 class TcpService:

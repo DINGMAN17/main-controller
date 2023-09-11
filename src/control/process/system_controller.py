@@ -21,14 +21,16 @@ class Singleton(object):
         return class_._instances[class_]
 
 
-class StatusController(Singleton):
+class SystemController(Singleton):
     def __init__(self):
         self._admin: Optional[Client] = None
         self._users: List[Optional[Client]] = []
         self._controller_clients: Dict[Optional[ClientType]] = {}
+
         self._tasks_list: Tasks = Tasks()
         self._current_integrated_command: Optional[Command] = None
         self._system_error: Optional[ErrorType] = None
+
         self._status_queue = queue.Queue()
         self._current_task_queue = queue.Queue()
         self._lock = threading.RLock()

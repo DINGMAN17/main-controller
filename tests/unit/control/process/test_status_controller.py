@@ -29,7 +29,7 @@ class TestSubsystemStatus:
 @pytest.mark.usefixtures("status_controller_with_command")
 class TestUpdateRecipientStatus:
     def test_update_recipient_status_after_sending_command(self, mocker):
-        mocker.patch("src.control.process.status_controller.StatusController.update_and_add_status",
+        mocker.patch("src.control.process.system_controller.SystemController.update_and_add_status",
                      return_value=None)
         update_status, new_status = self.status_controller.update_recipient_status_after_sending_command(self.command)
         if self.command.busy_command:

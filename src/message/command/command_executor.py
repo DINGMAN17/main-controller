@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional, List
 
-from src.communication.client import ClientType
+from src.communication.client import ClientType, ClientStatus
 from src.control.initialisation import Initialisation
+from src.control.operation.system_all import SystemStatus
 from src.hardware.gyroscope import Gyroscope
 from src.hardware.moving_mass import MovingMass
 from src.hardware.sensors import Gyro_sensor, MovingMassPos, Inclinometer
@@ -15,8 +16,9 @@ class Command:
     command_type: BaseCommandType
     recipient: ClientType
     value: str
-    busy_command: bool
-    lock_system: bool
+    system_status_required: Optional[SystemStatus]
+    clientStatus_required: Optional[ClientStatus]
+    update_subsystem_status: Optional[SystemStatus]  # update the subsystem status after sending
 
 
 class BaseCommandExecutor:
@@ -26,6 +28,7 @@ class BaseCommandExecutor:
         self._command_to_send: Optional[List[Command]] = None
         self._busy_commands_list: Optional[List[Command]] = None
         self._lock_commands_list: Optional[List[Command]] = None
+        self._safe_mode_commands_list: Optional[List[Command]] = None
 
     @property
     def command_type(self):
@@ -66,6 +69,14 @@ class BaseCommandExecutor:
     @lock_commands_list.setter
     def lock_commands_list(self, lock_command_list):
         self._lock_commands_list = lock_command_list
+
+    @property
+    def safe_mode_commands_list(self):
+        return self._lock_commands_list
+
+    @safe_mode_commands_list.setter
+    def safe_mode_commands_list(self, safe_mode_command_list):
+        self._safe_mode_commands_list = safe_mode_command_list
 
     def execute(self):
         output_msg = self.get_output_message()

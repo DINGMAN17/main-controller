@@ -5,7 +5,7 @@ from typing import List
 from src.communication.client import Client, ClientType
 from src.control.exceptions.process_execptions import NotValidSubsystemException
 from src.control.process.admin_controller import AdminController
-from src.control.process.status_controller import StatusController
+from src.control.process.system_controller import SystemController
 from src.control.process.subsystem_controller import SubsystemController
 from src.utils.logging import LogMessage
 
@@ -13,18 +13,18 @@ from src.utils.logging import LogMessage
 # TODO: add logging
 class SystemExecution:
     def __init__(self):
-        self.status_controller = StatusController()
-        self.admin_controller = AdminController(self.status_controller)
-        self.subsystem_controller = SubsystemController(self.status_controller)
+        self.system_controller = SystemController()
+        self.admin_controller = AdminController(self.system_controller)
+        self.subsystem_controller = SubsystemController(self.system_controller)
 
     def get_admin(self) -> Client:
-        return self.status_controller.admin
+        return self.system_controller.admin
 
     def get_controllers(self) -> dict:
-        return self.status_controller.controller_clients
+        return self.system_controller.controller_clients
 
     def get_users(self) -> List[Client]:
-        return self.status_controller.users
+        return self.system_controller.users
 
     def identify_client(self, client_socket) -> Client:
         client_not_identified = True
@@ -67,12 +67,12 @@ class SystemExecution:
 
     def send_update_from_subcontroller_to_admin(self):
         self.clear_old_updates_from_subcontrollers()
-        self.status_controller.get_connected_subsystem_status()
-        while self.status_controller.get_admin_connection_state():
+        self.system_controller.get_connected_subsystem_status()
+        while self.system_controller.get_admin_connection_state():
             update_list = self.subsystem_controller.get_update_from_subcontroller()
-            status_list = self.status_controller.get_status_from_queue()
+            status_list = self.system_controller.get_status_from_queue()
             self.admin_controller.send_update_to_users(status_list + update_list)
 
     def clear_old_updates_from_subcontrollers(self):
-        self.status_controller.clear_status_queue()
+        self.system_controller.clear_status_queue()
         self.subsystem_controller.clear_queue(queue_type="data")

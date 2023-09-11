@@ -14,10 +14,22 @@ class ClientType(Enum):
 
 
 class ClientStatus(Enum):
+    """
+    An Enum of status of a client.
+
+    Attributes:
+    WAIT: before the client is identified.
+    BUSY: when the system is performing an exclusive task.
+    EMERG: stop all the operations.
+    ERROR: stop all the operations except auto-stabilizing & auto-levelling.
+    LOCK: when the system is stopping, new command is not allowed.
+    """
+
     WAIT = "wait"
     READY = "ready"
     BUSY = "busy"
-    ERROR = "warning"
+    ERROR = "error"
+    EMERG = "emergency"
     LOCK = "lock"  # when the system is stopping
 
 
