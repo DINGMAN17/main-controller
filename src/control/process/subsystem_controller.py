@@ -2,11 +2,12 @@ import queue
 import threading
 import time
 
-from src.communication.client import ClientType, Client
+from src.communication.client import ClientType, Client, ClientStatus
 from src.control.exceptions.network_exceptions import ClientDisconnectException
 from src.control.exceptions.process_execptions import NotValidSubsystemException
 from src.control.process.paser import Paser
 from src.control.process.status_controller import StatusController
+from src.hardware.sensors import Vision
 from src.message.command.command_executor import MassCommandExecutor, GyroCommandExecutor, LevellingCommandExecutor
 from src.message.error.error import NetworkErrorType
 from src.message.info.info_invoker import InfoInvoker
@@ -51,7 +52,7 @@ class SubsystemController:
                 queue_to_clear.queue.clear()
 
     def add_active_subsystem_client(self, client):
-        if client.client_type in [ClientType.LEVEL, ClientType.GYRO, ClientType.MASS]:
+        if client.client_type in [ClientType.LEVEL, ClientType.GYRO, ClientType.MASS, ClientType.VISION]:
             self.status_controller.controller_clients[client.client_type] = client
         else:
             raise NotValidSubsystemException()
@@ -60,11 +61,12 @@ class SubsystemController:
         threading.Thread(target=self.request_data_thread, args=(new_client,)).start()
         threading.Thread(target=self.receive_message_thread, args=(new_client,)).start()
 
-    def request_data_thread(self, client: Client, interval=20):
+    def request_data_thread(self, client: Client, interval=0.5):
         while client.connected:
             try:
                 command = self.get_data(client.client_type)
-                client.tcp_service.send_message(command)
+                if command:
+                    client.tcp_service.send_message(command)
                 time.sleep(interval)
             except ClientDisconnectException:
                 self.handle_subsystem_disconnect(client.client_type)
@@ -78,6 +80,10 @@ class SubsystemController:
             command = GyroCommandExecutor.get_data()
         elif client_type == ClientType.LEVEL:
             command = LevellingCommandExecutor.request_data()
+        elif client_type == ClientType.VISION:
+            status = self.status_controller.get_subsystem_status(client_type)
+            if status == ClientStatus.READY:
+                command = Vision.get_measurement()
         return command
 
     def send_system_command(self, system_cmd):
@@ -102,6 +108,7 @@ class SubsystemController:
             message_components = message.split("-")
             msg_type = BaseMessageType(message_components[1])
             if msg_type == BaseMessageType.DATA:
+                print(message)
                 self.data_queue.put(message + "\n")
             elif msg_type == BaseMessageType.INFO:
                 self.process_info(message_components)

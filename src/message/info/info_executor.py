@@ -58,10 +58,18 @@ class MassInfoExecutor(BaseInfoExecutor):
             self.move_finish()
         elif self._info_type == MassInfoType.MOVE_IN_PROGRESS:
             self.move_in_progress()
+        elif self._info_type == MassInfoType.MOVE_HOME:
+            self.move_home()
         elif self._info_type == MassInfoType.STOP_DONE:
             self.stop_finish()
         elif self._info_type == MassInfoType.SET_DONE:
             self.set_pos_finish()
+        elif self._info_type == MassInfoType.ANTI_SWAY_ON_DONE:
+            self.anti_sway_on_finish()
+        elif self._info_type == MassInfoType.ANTI_SWAY_OFF_DONE:
+            self.anti_sway_off_finish()
+        elif self._info_type == MassInfoType.MOVE_ANTI_SWAY_AUTO_DONE:
+            self.anti_sway_auto_done()
         self.update_outputs()
         return self.output_dict
 
@@ -79,6 +87,20 @@ class MassInfoExecutor(BaseInfoExecutor):
     def stop_finish(self):
         self._output_info_type = AdminInfoType.M_STOP_DONE
         self._output_status.append(update_ready_status(ClientType.MASS))
+
+    def anti_sway_on_finish(self):
+        self._output_info_type = AdminInfoType.M_ANTISWAY_ON
+
+    def anti_sway_off_finish(self):
+        self._output_info_type = AdminInfoType.M_ANTISWAY_OFF
+        self._output_status.append(update_ready_status(ClientType.MASS))
+
+    def move_home(self):
+        self._output_info_type = AdminInfoType.M_MOVE_HOME
+        # self._output_status.append(update_ready_status(ClientType.MASS))
+
+    def anti_sway_auto_done(self):
+        self._output_info_type = AdminInfoType.M_ANTISWAY_AUTO_FINISH
 
 
 class LevelInfoExecutor(BaseInfoExecutor):
@@ -100,6 +122,10 @@ class LevelInfoExecutor(BaseInfoExecutor):
             self.init_finish()
         elif self._info_type == LevelInfoType.CABLE_INIT_DONE:
             self.cable_init_finish()
+        elif self._info_type == LevelInfoType.AUTO_LEVEL_ON:
+            self.auto_level_on()
+        elif self._info_type == LevelInfoType.MANUAL_MOVE_DONE:
+            self.manual_move_done()
         self.update_outputs()
         if self._output_info_msg is not None:
             self.output_dict['info_msg'] = self._output_info_msg
@@ -134,6 +160,13 @@ class LevelInfoExecutor(BaseInfoExecutor):
         self._output_info_type = AdminInfoType.L_CABLE_INIT_DONE
         self._output_status.append(update_ready_status(ClientType.LEVEL))
 
+    def auto_level_on(self):
+        self._output_info_type = AdminInfoType.L_AUTO_LEVEL_ON
+        self._output_status.append(update_ready_status(ClientType.LEVEL))
+
+    def manual_move_done(self):
+        self._output_info_type = AdminInfoType.L_MANUAL_MOVE_DONE
+
 
 class GyroInfoExecutor(BaseInfoExecutor):
     def __init__(self):
@@ -150,6 +183,10 @@ class GyroInfoExecutor(BaseInfoExecutor):
             self.auto_off_finish()
         elif self._info_type == GyroInfoType.CENTER_DONE:
             self.center_finish()
+        elif self._info_type == GyroInfoType.AUTO_ANGLE_ON:
+            self.auto_angle_on()
+        elif self._info_type == GyroInfoType.AUTO_ANGLE_OFF:
+            self.auto_angle_off()
         self.update_outputs()
         return self.output_dict
 
@@ -171,6 +208,14 @@ class GyroInfoExecutor(BaseInfoExecutor):
 
     def center_finish(self):
         self._output_info_type = AdminInfoType.G_CENTER_DONE
+        self._output_status.append(update_ready_status(ClientType.GYRO))
+
+    def auto_angle_off(self):
+        self._output_info_type = AdminInfoType.G_AUTO_ANGLE_DONE
+        self._output_status.append(update_ready_status(ClientType.GYRO))
+
+    def auto_angle_on(self):
+        self._output_info_type = AdminInfoType.G_AUTO_ANGLE_ON
         self._output_status.append(update_ready_status(ClientType.GYRO))
 
 

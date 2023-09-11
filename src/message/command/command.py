@@ -30,6 +30,8 @@ class MassCommandType(BaseCommandType):
     MOVE_AUTO_Y_PLUS = "move_y_plus"
     MOVE_AUTO_Y_MINUS = "move_y_minus"
     MOVE_AUTO_Y_STOP = "move_y_stop"
+    ANTI_SWAY_ON = "sway_on"
+    ANTI_SWAY_OFF = "sway_off"
 
     SET = "set" #Y0
     MOVE = "move"

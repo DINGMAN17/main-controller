@@ -17,7 +17,7 @@ from src.utils.logging import LogMessage
 
 
 class AdminController:
-    #TODO: handle admin when admin disconnect and reconnect
+    # TODO: handle admin when admin disconnect and reconnect
     def __init__(self, status_controller: StatusController):
         self.status_controller: StatusController = status_controller
         self.command_invoker: CommandInvoker = CommandInvoker()
@@ -77,7 +77,10 @@ class AdminController:
 
     def process_command(self, msg):
         # e.g. A-C-L-stop
+        # TODO: design a way to handle commands that requires only actions from main controller
         try:
+            if "status" in msg.lower():
+                self.sendStatusUpdateToAdmin()
             self.command_invoker.msg_components = msg
             self.command_invoker.invoke()
             commands_list = self.command_invoker.commands_to_send
@@ -87,6 +90,9 @@ class AdminController:
             pass
         except SendCommandStatusCheckFailException:
             pass
+
+    def sendStatusUpdateToAdmin(self):
+        self.status_controller.get_connected_subsystem_status()
 
     def add_and_verify_command_to_queue(self, commands_list: List[Command]):
         for cmd in commands_list:
@@ -142,7 +148,7 @@ class AdminController:
             # update if the command is integrated command
             self.update_integrated_command()
         except ClientDisconnectException:
-            print("AdminDisconnectException")
+            # print("AdminDisconnectException")
             self.handle_admin_disconnect()
 
     def update_integrated_command(self):
@@ -158,4 +164,3 @@ class AdminController:
         self.admin_command_queue.queue.clear()
         [self.add_command_to_queue(cmd) for cmd in stop_command_list if
          self.status_controller.check_recipient_status_for_safe_mode(cmd.recipient)]
-

@@ -39,3 +39,11 @@ class MovingMass:
     @staticmethod
     def manual_Move_Ystop():
         return "Mass_JogYStop\n"
+
+    @staticmethod
+    def anti_sway_on():
+        return "Mass_AntiSwayOn\n"
+
+    @staticmethod
+    def anti_sway_off():
+        return "Mass_AntiSwayOff\n"

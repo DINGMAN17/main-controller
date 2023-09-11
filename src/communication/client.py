@@ -11,6 +11,7 @@ class ClientType(Enum):
     MASS = "M"
     GYRO = "G"
     LEVEL = "L"
+    VISION = "V"
 
 
 class ClientStatus(Enum):

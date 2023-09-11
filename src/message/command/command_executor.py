@@ -19,6 +19,8 @@ class Command:
     lock_system: bool
 
 
+
+
 class BaseCommandExecutor:
     def __init__(self):
         self._command_type: Optional[BaseCommandType] = None
@@ -87,8 +89,9 @@ class LevellingCommandExecutor(BaseCommandExecutor):
         super().__init__()
         self._command_value: Optional[str] = None
         self.client_type = ClientType.LEVEL
-        self.lock_commands_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.STOP]
-        self.busy_commands_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.LEVEL_ONCE,
+        # self.lock_commands_list = [LevelCommandType.LEVEL_AUTO, LevelCommandType.STOP]
+        self.lock_commands_list = [LevelCommandType.STOP]
+        self.busy_commands_list = [LevelCommandType.LEVEL_ONCE,
                                    LevelCommandType.CABLE_INIT,
                                    LevelCommandType.UP_AUTO, LevelCommandType.DOWN_AUTO]
 
@@ -204,8 +207,8 @@ class MassCommandExecutor(BaseCommandExecutor):
         super().__init__()
         self._command_value: Optional[str] = None
         self.client_type = ClientType.MASS
-        self.busy_commands_list = [MassCommandType.SET]
-        self.lock_commands_list = [MassCommandType.STOP]
+        self.busy_commands_list = [MassCommandType.SET, MassCommandType.MOVE, MassCommandType.ANTI_SWAY_ON]
+        self.lock_commands_list = [MassCommandType.STOP, MassCommandType.ANTI_SWAY_OFF]
 
     @property
     def command_value(self):
@@ -241,6 +244,10 @@ class MassCommandExecutor(BaseCommandExecutor):
             output = MassCommandExecutor.manual_Move_X_stop()
         elif self.command_type == MassCommandType.MOVE_AUTO_Y_STOP:
             output = MassCommandExecutor.manual_Move_Y_stop()
+        elif self.command_type == MassCommandType.ANTI_SWAY_ON:
+            output = MassCommandExecutor.anti_sway_on()
+        elif self.command_type == MassCommandType.ANTI_SWAY_OFF:
+            output = MassCommandExecutor.anti_sway_off()
         return output
 
     @staticmethod
@@ -263,27 +270,35 @@ class MassCommandExecutor(BaseCommandExecutor):
 
     @staticmethod
     def manual_move_X_positive():
-        return "Mass_JogXPlus\n"
+        return MovingMass.manual_move_Xplus()
 
     @staticmethod
     def manual_move_X_negative():
-        return "Mass_JogXMinus\n"
+        return MovingMass.manual_move_Xminus()
 
     @staticmethod
     def manual_Move_X_stop():
-        return "Mass_JogXStop\n"
+        return MovingMass.manual_Move_Xstop()
 
     @staticmethod
     def manual_Move_Y_positive():
-        return "Mass_JogYPlus\n"
+        return MovingMass.manual_Move_Yplus()
 
     @staticmethod
     def manual_Move_Y_negative():
-        return "Mass_JogYMinus\n"
+        return MovingMass.manual_Move_Yminus()
 
     @staticmethod
     def manual_Move_Y_stop():
-        return "Mass_JogYStop\n"
+        return MovingMass.manual_Move_Ystop()
+
+    @staticmethod
+    def anti_sway_on():
+        return MovingMass.anti_sway_on()
+
+    @staticmethod
+    def anti_sway_off():
+        return MovingMass.anti_sway_off()
 
 
 class GyroCommandExecutor(BaseCommandExecutor):

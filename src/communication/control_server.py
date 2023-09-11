@@ -24,7 +24,6 @@ class ControlServer:
 
     def accept_client(self):
         client_handler = ClientsHandler()
-
         # TODO: rethink about the condition, how to turn the server off
         while True:
             client_socket, address = self._socket.accept()
@@ -33,6 +32,3 @@ class ControlServer:
             client_socket.settimeout(self._timeout)
             threading.Thread(target=client_handler.run, args=(client_socket,)).start()
 
-
-if __name__ == "__main__":
-    ControlServer(socket_address=('192.168.1.6', 8080), timeout=86400).run()

@@ -33,5 +33,11 @@ class MovingMassPos:
         return "Mass_GetPos\n"
 
 
+class Vision:
+    @staticmethod
+    def get_measurement():
+        return "Vision_getPos\n"
+
+
 if __name__ == "__main__":
     sensor = Inclinometer()
