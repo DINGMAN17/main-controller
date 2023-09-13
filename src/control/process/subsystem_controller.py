@@ -132,7 +132,6 @@ class SubsystemController:
                                                                            ["info_type", "info_msg", "command",
                                                                             "status"])
             if output_type is not None:
-                # TODO: solve update on going task for integrated process
                 # self.update_on_going_task(output_info)
                 if output_msg is not None:
                     self.info_queue.put(output_msg)
@@ -160,16 +159,17 @@ class SubsystemController:
         for cmd in output_command:
             self.send_system_command(cmd)
             self.system_command_queue.put(cmd)
-            # TODO: add task to future task
 
     def get_update_from_subcontroller(self) -> list:
-        data_list = [msg_queue.get() for msg_queue in
-                     [self.info_queue, self.data_queue, self.debug_queue, self.status_controller.status_queue] if
+        update_list = [msg_queue.get() for msg_queue in
+                     [self.info_queue, self.error_queue, self.data_queue, self.debug_queue, self.status_controller.status_queue] if
                      not msg_queue.empty()]
-        return data_list
+        return update_list
 
     def handle_subsystem_disconnect(self, client_type: ClientType):
-        self.status_controller.system_error = self.get_error_type(client_type)
+        error = self.get_error_type(client_type)
+        self.status_controller.system_error = error
+        self.error_queue.put(error.value)
 
     def get_error_type(self, client_type):
         error_type = None
@@ -179,4 +179,6 @@ class SubsystemController:
             error_type = NetworkErrorType.MASS_DISCONNECT
         elif client_type == ClientType.LEVEL:
             error_type = NetworkErrorType.LEVEL_DISCONNECT
+        elif client_type == ClientType.VISION:
+            error_type = NetworkErrorType.VISION_DISCONNECT
         return error_type

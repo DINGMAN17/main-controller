@@ -11,6 +11,7 @@ class NetworkErrorType(ErrorType):
     LEVEL_DISCONNECT = "A-ERROR-levelling controller disconnects"
     MASS_DISCONNECT = "A-ERROR-moving mass controller disconnects"
     GYRO_DISCONNECT = "A-ERROR-gyro controller disconnects"
+    VISION_DISCONNECT = "A-ERROR-vision system disconnects"
 
 
 class OperationError(ErrorType):
