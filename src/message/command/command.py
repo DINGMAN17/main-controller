@@ -23,7 +23,10 @@ class LevelCommandType(BaseCommandType):
 
 
 class MassCommandType(BaseCommandType):
-    #manual move 4 directions
+
+    SET_MOVE_FAST = "move_fast"
+    SET_MOVE_SLOW = "move_slow"
+    # manual move 4 directions
     MOVE_AUTO_X_PLUS = "move_x_plus"
     MOVE_AUTO_X_MINUS = "move_x_minus"
     MOVE_AUTO_X_STOP = "move_x_stop"
@@ -33,7 +36,7 @@ class MassCommandType(BaseCommandType):
     ANTI_SWAY_ON = "sway_on"
     ANTI_SWAY_OFF = "sway_off"
 
-    SET = "set" #Y0
+    SET = "set"  # Y0
     MOVE = "move"
     STOP = "stop"
     INIT = "init"
@@ -44,7 +47,7 @@ class GyroCommandType(BaseCommandType):
     CENTER = "center"  # busy
     AUTO_ON = "auto_on"
     AUTO_OFF = "auto_off"
-    MOVE_CUSTOM_ANGLE = "move_angle" #A-C-G-move_angle-@_5
+    MOVE_CUSTOM_ANGLE = "move_angle"  # A-C-G-move_angle-@_5
     STOP_MOVE_CUSTOM_ANGLE = "move_angle_stop"
     ZERO = "zero"
     STOP = "stop"

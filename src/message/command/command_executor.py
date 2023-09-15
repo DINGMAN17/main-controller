@@ -19,8 +19,6 @@ class Command:
     lock_system: bool
 
 
-
-
 class BaseCommandExecutor:
     def __init__(self):
         self._command_type: Optional[BaseCommandType] = None
@@ -232,6 +230,10 @@ class MassCommandExecutor(BaseCommandExecutor):
             output = MassCommandExecutor.stop()
         elif self.command_type == MassCommandType.GET:
             output = MassCommandExecutor.get_position()
+        elif self.command_type == MassCommandType.SET_MOVE_FAST:
+            output = MassCommandExecutor.set_move_speed(set_fast=True)
+        elif self.command_type == MassCommandType.SET_MOVE_SLOW:
+            output = MassCommandExecutor.set_move_speed(set_fast=False)
         elif self.command_type == MassCommandType.MOVE_AUTO_X_PLUS:
             output = MassCommandExecutor.manual_move_X_positive()
         elif self.command_type == MassCommandType.MOVE_AUTO_X_MINUS:
@@ -267,6 +269,10 @@ class MassCommandExecutor(BaseCommandExecutor):
     @staticmethod
     def get_position():
         return MovingMassPos.get_position()
+
+    @staticmethod
+    def set_move_speed(set_fast: bool):
+        return MovingMass.set_manual_move_speed(fast=set_fast)
 
     @staticmethod
     def manual_move_X_positive():

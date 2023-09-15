@@ -9,6 +9,13 @@ class MovingMass:
         return "Mass_SetPos_" + str(x_position) + str(y_position) + "\n"
 
     @staticmethod
+    def set_manual_move_speed(fast=False):
+        if fast:
+            return "Mass_FastJog"
+        else:
+            return "Mass_SlowJog"
+
+    @staticmethod
     def move():
         return "Mass_Move\n"
 
