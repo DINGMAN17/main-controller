@@ -32,6 +32,10 @@ class MovingMassPos:
     def get_position():
         return "Mass_GetPos\n"
 
+    @staticmethod
+    def set_zero_sensor():
+        return "Mass_ZeroSensor\n"
+
 
 class Vision:
     @staticmethod

@@ -23,7 +23,7 @@ class LevelCommandType(BaseCommandType):
 
 
 class MassCommandType(BaseCommandType):
-
+    # adjust speed
     SET_MOVE_FAST = "move_fast"
     SET_MOVE_SLOW = "move_slow"
     # manual move 4 directions
@@ -33,6 +33,7 @@ class MassCommandType(BaseCommandType):
     MOVE_AUTO_Y_PLUS = "move_y_plus"
     MOVE_AUTO_Y_MINUS = "move_y_minus"
     MOVE_AUTO_Y_STOP = "move_y_stop"
+    # anti sway
     ANTI_SWAY_ON = "sway_on"
     ANTI_SWAY_OFF = "sway_off"
 
@@ -40,6 +41,8 @@ class MassCommandType(BaseCommandType):
     MOVE = "move"
     STOP = "stop"
     INIT = "init"
+    # sensor related
+    ZERO = "zero"
     GET = "get"
 
 

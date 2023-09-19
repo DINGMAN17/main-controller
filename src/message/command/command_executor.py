@@ -250,7 +250,13 @@ class MassCommandExecutor(BaseCommandExecutor):
             output = MassCommandExecutor.anti_sway_on()
         elif self.command_type == MassCommandType.ANTI_SWAY_OFF:
             output = MassCommandExecutor.anti_sway_off()
+        elif self.command_type == MassCommandType.ZERO:
+            output = MassCommandExecutor.set_zero_sensor()
         return output
+
+    @staticmethod
+    def set_zero_sensor():
+        return MovingMassPos.set_zero_sensor()
 
     @staticmethod
     def set_position(value):
